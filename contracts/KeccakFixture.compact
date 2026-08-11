@@ -1,0 +1,58 @@
+// KeccakFixture.compact — PLAN-01 gates G1.1 and G1.3.
+//
+// Modelled on compact-end-2-end @ aa344546
+// cases/features/keccak256/contracts/provable-keccak256.compact.
+//
+// This is the project's toolchain canary, not product code. It proves, on OUR
+// stack, that the three things every later PLAN rests on actually work:
+//
+//   G1.1  keccak256 inside a PROVABLE circuit. Storing the digest in a ledger
+//         field pulls keccak into zkir, which forces `--feature-zkir-v3`, which
+//         only the `_experimental` proof server can prove. If the pins are wrong
+//         this contract is where it shows.
+//   G1.3  a TYPED event, read back through the indexer. `Misc` events are broken
+//         end-to-end on this lane (PLAN-00 §7), so the probe emits ShieldedSpend
+//         — a typed event with one indexed scalar, which the indexer classifies
+//         as SHIELDED_SPEND.
+//
+// `value` is a circuit PARAMETER, not a witness: the harness binds vacant
+// witnesses, so the value to hash arrives as a circuit arg. A parameter is
+// treated as a witness value, so anything derived from it must be `disclose`d
+// before it reaches the public ledger, a return, or an event.
+//
+// Trailing zeros: a Bytes<N> is hashed identically off-circuit and in-circuit —
+// the full aligned N bytes, trailing 0x00 included. Any input proves.
+//
+// Budget: 2 exported circuits (limit is 7 — deploy-tx verifier-key block size).
+
+pragma language_version >= 0.25.0;
+
+import CompactStandardLibrary;
+
+// The digest written by the most recent hashAndStore call.
+export ledger lastDigest: Bytes<32>;
+// Bumped by every proven call, so a re-attached handle (findDeployed) can prove
+// it is looking at the same accumulating contract instance across phases.
+export ledger callCount: Counter;
+
+constructor() {
+  lastDigest = default<Bytes<32>>;
+}
+
+// G1.1: keccak256 in-circuit, digest written to public state and returned.
+export circuit hashAndStore(value: Bytes<32>): Bytes<32> {
+  const digest: Bytes<32> = keccak256<Bytes<32>>(value);
+  lastDigest = disclose(digest);
+  callCount.increment(1);
+  return disclose(digest);
+}
+
+// G1.3: same digest, also emitted as a typed event. `emit` must come after the
+// state writes and may only appear in an exported circuit.
+export circuit hashStoreAndEmit(value: Bytes<32>): Bytes<32> {
+  const digest: Bytes<32> = keccak256<Bytes<32>>(value);
+  lastDigest = disclose(digest);
+  callCount.increment(1);
+  emit(ShieldedSpend { nullifier: disclose(digest) });
+  return disclose(digest);
+}

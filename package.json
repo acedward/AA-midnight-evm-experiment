@@ -1,0 +1,69 @@
+{
+  "name": "midnight-aa",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "EVM-signature account abstraction on Midnight 2.x (project 00001-midnight-aa, PLAN-00..05)",
+  "engines": {
+    "node": ">=22"
+  },
+  "packageManager": "pnpm@11.4.0",
+  "scripts": {
+    "stack:up": "./infra/stack-up.sh",
+    "stack:status": "./infra/stack-status.sh",
+    "stack:down": "./infra/stack-down.sh",
+    "compact:image": "./infra/build-compact-image.sh",
+    "compile": "node --experimental-strip-types src/compile-cli.ts",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "versions:snapshot": "node scripts/snapshot-versions.mjs"
+  },
+  "dependencies": {
+    "@midnight-ntwrk/compact-js": "2.5.5-rc.7",
+    "@midnight-ntwrk/compact-runtime": "0.18.0-rc.1",
+    "@midnight-ntwrk/midnight-js-contracts": "5.0.0-beta.6",
+    "@midnight-ntwrk/midnight-js-http-client-proof-provider": "5.0.0-beta.6",
+    "@midnight-ntwrk/midnight-js-indexer-public-data-provider": "5.0.0-beta.6",
+    "@midnight-ntwrk/midnight-js-level-private-state-provider": "5.0.0-beta.6",
+    "@midnight-ntwrk/midnight-js-network-id": "5.0.0-beta.6",
+    "@midnight-ntwrk/midnight-js-node-zk-config-provider": "5.0.0-beta.6",
+    "@midnight-ntwrk/midnight-js-types": "5.0.0-beta.6",
+    "@midnight-ntwrk/platform-js": "3.0.0",
+    "@midnight-ntwrk/wallet-api": "5.0.0",
+    "@midnight-ntwrk/zswap": "4.0.0",
+    "@midnightntwrk/ledger-v9": "1.0.0-rc.3",
+    "@midnightntwrk/onchain-runtime-v4": "4.0.0-rc.3",
+    "@midnightntwrk/wallet-sdk-address-format": "4.0.0-beta.2",
+    "@midnightntwrk/wallet-sdk-dust-wallet": "5.0.0-beta.2",
+    "@midnightntwrk/wallet-sdk-facade": "5.0.0-beta.2",
+    "@midnightntwrk/wallet-sdk-hd": "3.1.0-beta.1",
+    "@midnightntwrk/wallet-sdk-shielded": "4.0.0-beta.2",
+    "@midnightntwrk/wallet-sdk-unshielded-wallet": "4.0.0-beta.2",
+    "@noble/curves": "2.2.0",
+    "@noble/hashes": "2.2.0",
+    "dotenv": "17.2.3",
+    "rxjs": "7.8.2",
+    "ws": "8.21.0"
+  },
+  "devDependencies": {
+    "@types/node": "22.19.19",
+    "@types/ws": "8.18.1",
+    "typescript": "5.9.3",
+    "vitest": "3.2.4"
+  },
+  "_overrides_comment": "One WASM copy rule (PLAN-01 \u00a7Version pins): the ledger / onchain-runtime / zswap / compact-runtime WASM modules keep module-level state, so a second copy resolved anywhere in the tree produces cross-instance type errors that look like data corruption. pnpm reads these from pnpm-workspace.yaml (pnpm 11 moved the setting); the fields below keep npm/yarn parity \u2014 keep all three in sync.",
+  "overrides": {
+    "@midnightntwrk/ledger-v9": "1.0.0-rc.3",
+    "@midnightntwrk/onchain-runtime-v4": "4.0.0-rc.3",
+    "@midnight-ntwrk/zswap": "4.0.0",
+    "@midnight-ntwrk/compact-runtime": "0.18.0-rc.1",
+    "@midnight-ntwrk/platform-js": "3.0.0"
+  },
+  "resolutions": {
+    "@midnightntwrk/ledger-v9": "1.0.0-rc.3",
+    "@midnightntwrk/onchain-runtime-v4": "4.0.0-rc.3",
+    "@midnight-ntwrk/zswap": "4.0.0",
+    "@midnight-ntwrk/compact-runtime": "0.18.0-rc.1",
+    "@midnight-ntwrk/platform-js": "3.0.0"
+  }
+}

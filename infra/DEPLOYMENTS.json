@@ -1,0 +1,167 @@
+{
+  "_comment": "Append-only registry of contracts deployed on the persistent Part-0 stack. Written by src/deployments.ts. `stack` is the COMPOSE_PROJECT_NAME — addresses only resolve against the chain that minted them.",
+  "deployments": [
+    {
+      "name": "KeccakFixture",
+      "contractAddress": "e0944b81d528fa523dd9d03b297b7de01b6852a6ac85a7d43658b893a04a6ae5",
+      "txHash": "88d3d3122af2d1c275d4cb60dbc763094e71e31e20ccf17b4e793bcc6f4b2938",
+      "txId": "007391cde0fa073b695059af1a5b87ac6e8aa5960b6fcf574e60f1f56d3ecfce04",
+      "note": "PLAN-01 G1.1 keccak toolchain canary",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T18:05:50.065Z"
+    },
+    {
+      "name": "prove-verify-secp256k1",
+      "contractAddress": "5472808d86268876a61813df4e0b83dcceb5588e591e6488aa463dee8a049b5a",
+      "txHash": "12eef06a9122608d385c7dfa88af26797bf09f16142dba7c77d2183a146906af",
+      "txId": "002496ca5b8252ef8e80dc598fc44e400a909308e539c7eb6dcbe34f756749349f",
+      "note": "PLAN-01 G1.2 secp256k1 prove-case",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T18:09:02.228Z"
+    },
+    {
+      "name": "prove-recover-address-secp256k1",
+      "contractAddress": "3373894812c840de1ab529641b69e48e533f81710d57e0290ed61b422b7a7284",
+      "txHash": "ac311102a63066f0720dc6d417910c29250ee26d1ea20d1e5accc60f9b3a04f2",
+      "txId": "00690899b9b459ed5f77db5a820fdaab04418be26bf5c7342b807ffe23b9d199ed",
+      "note": "PLAN-01 G1.2 secp256k1 prove-case",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T18:10:14.332Z"
+    },
+    {
+      "name": "prove-verify-secp256k1",
+      "contractAddress": "87ff0fa51ab8ddd72894983a9e59abc6f6125948b60f87dcd780d66b6ad3b30e",
+      "txHash": "ea380e0f6234158e5bf53abba1a4327fc8915eb16dbd908f1ce57f7278b47dd4",
+      "txId": "0071a780baeec716766b6c21b1444b10dfe8270881e310050abebc40cf4e697232",
+      "note": "PLAN-01 G1.2 secp256k1 prove-case",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T18:14:19.975Z"
+    },
+    {
+      "name": "prove-ethereum-address-secp256k1",
+      "contractAddress": "f7b278830e8c0d9332be380dc6bb82c2c30bfa4a74b00604d17285806c372da3",
+      "txHash": "fe7806c459b1c13a110348890554993a5763e226a2ab640d42dec76c5fa66523",
+      "txId": "007ccc54b9a04bf9f02ff3ca320e96d29ca3d52eff38ad8d49ffc0736c07771934",
+      "note": "PLAN-01 G1.2 secp256k1 prove-case",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T18:15:14.684Z"
+    },
+    {
+      "name": "prove-recover-address-secp256k1",
+      "contractAddress": "a9917796c618451c1440f7ca593ed9a603ab4304dbcf1f76f52e0b3177f33626",
+      "txHash": "8ab9a657f14c897f9ecf359eac4fcbc0a107d6b3b289ae97b12445667bc2c540",
+      "txId": "008a3263487c17881282467d4ed29ad74237f7d270149b4f9f5c8a202c5cbc8266",
+      "note": "PLAN-01 G1.2 secp256k1 prove-case",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T18:16:44.098Z"
+    },
+    {
+      "name": "KeccakFixture",
+      "contractAddress": "1e86beba7e1729bd376a8c32e4aa45a581a971057f1880a520c39226b319f88e",
+      "txHash": "eddfbc25b53b8067ad73f55d7a79a7833db7723cc919617fb430d9d285aca170",
+      "txId": "00afe2103f30c8149fd17ff343ae9c0846bf54dfdb39da0f1af5be7e027383ba81",
+      "note": "PLAN-01 G1.3 event read-back fixture",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T18:18:56.412Z"
+    },
+    {
+      "name": "KeccakFixture",
+      "contractAddress": "37c0c3a81eaf5abbb7fc9e5eee8c23eb9c044adb1bfadabc591968859677c03b",
+      "txHash": "f64388ed7057b9140253b2ee732445a8b5bfa271f398c23b909755eb325a8bbb",
+      "txId": "00214881c20385b46d5b65aae98c3210690a3d8d7ffd3ace9d35ceecd5b3ecd661",
+      "note": "PLAN-01 G1.3 event read-back fixture",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T18:21:02.046Z"
+    },
+    {
+      "name": "prove-verify-secp256k1",
+      "contractAddress": "84a6bd13a5368ddab2b0f44445dca0b7f1a8e54378f5860fe11354157b43ac7a",
+      "txHash": "df112220cf6f6a31e06236e620281d4b5645df1124dc6fdf99db8683d83c8dec",
+      "txId": "0050f580929d60f86418163843e7d8f8957a02258271806122052b5ee4b9b3008f",
+      "note": "PLAN-01 G1.2 secp256k1 prove-case",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T18:22:32.943Z"
+    },
+    {
+      "name": "prove-ethereum-address-secp256k1",
+      "contractAddress": "0c92f2192eac99c6d86099a397b1b6f0ae34fe6c2ac2583ce93dbd0303d022fa",
+      "txHash": "a0102f94a76a28a4d2b04fff0ef689f95f5c1156c49fa57157a38011f378d043",
+      "txId": "00fe7ee93a3088054fc31a17736d1c861d644f14753866901e82f7df217df57c6d",
+      "note": "PLAN-01 G1.2 secp256k1 prove-case",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T18:23:26.382Z"
+    },
+    {
+      "name": "prove-recover-address-secp256k1",
+      "contractAddress": "b2ef580405e586dde8d48573ce7717b903fb605f6ba862681840b26ef5156535",
+      "txHash": "73222069e3a736f8c59fc9e0789699aec15ba36b2bcc85f7197a63da326a3413",
+      "txId": "00c0ca084996b3f3b9b421a24fddd608b6313ac378c5906fe5dcf5e68aa9922fa5",
+      "note": "PLAN-01 G1.2 secp256k1 prove-case",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T18:24:55.902Z"
+    },
+    {
+      "name": "KeccakFixture",
+      "contractAddress": "90a0aa7995d31d80cc49bbac8c0779d002354b5b982c31dede2452288953eb5d",
+      "txHash": "bb7115cf0fd4d8ee888c36304c8feb8514d900159f056e254ce24f310b6f5294",
+      "txId": "00b60a46a72473e814befb31b160ebd46aa7df765ead069e80f0db12fa90b4afba",
+      "note": "PLAN-01 G1.1 keccak toolchain canary",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T18:26:26.759Z"
+    },
+    {
+      "name": "KeccakFixture",
+      "contractAddress": "ad4dfc1b414c696df980d48ca499458ba3aef7817d70678113076e30552cc558",
+      "txHash": "c4b3cb7170be6e6c1f8d4c8075227b2680818bacd2724eca87d48e4b207e34a5",
+      "txId": "00be4c08ac4c6c0428c649f72a60c45644f0aa4d8b9c62be274ce4065d1c832e2d",
+      "note": "PLAN-01 G1.3 event read-back fixture",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T18:29:20.545Z"
+    },
+    {
+      "name": "prove-verify-secp256k1",
+      "contractAddress": "d795219dc940481fafd61c821a2332957f945cec2953442c9b69569b9e5ab419",
+      "txHash": "e689e8ebfbe25dac0e800596632a696cba4222c180359eb779205ccfc62b9a9e",
+      "txId": "0047f6db551bc676624752ec99b2be13267e7715991c48367555944ff87dbd2f1d",
+      "note": "PLAN-01 G1.2 secp256k1 prove-case",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T18:33:26.519Z"
+    },
+    {
+      "name": "prove-ethereum-address-secp256k1",
+      "contractAddress": "5df33884f3e6e79214f988b320bc752dbf11c2ab086bc366610dc04a096f25c9",
+      "txHash": "d56fdc3aedadc77927d35a801e56f14d9a25d5942319de0ace696821ae70772c",
+      "txId": "00f7121b4066c8d3b1b3e8660406f045549f620811d13e93a01dda136dde0124a2",
+      "note": "PLAN-01 G1.2 secp256k1 prove-case",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T18:34:19.996Z"
+    },
+    {
+      "name": "prove-recover-address-secp256k1",
+      "contractAddress": "8203d7a15aa51088a272f783676af0a11db9fb9407283e3d63f1aa0937fc8576",
+      "txHash": "fcc5433dd6e976949e1634788a3941e06aa6a17f11e0bd652dc1c3aff4105eb3",
+      "txId": "00a16fe100f09b13f85dede39f23f506deb1ec754f7323fe74d19e129b0bcee228",
+      "note": "PLAN-01 G1.2 secp256k1 prove-case",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T18:35:50.845Z"
+    },
+    {
+      "name": "KeccakFixture",
+      "contractAddress": "f13d647bc6d61d6ae800a90b86a3b67050c20d180368a2692bc693de374824a5",
+      "txHash": "2233151d6333ca3557be63bba54b2d37b9b2a2b9b287e746c5073c5ae2de1519",
+      "txId": "00feac34200d1178e1a34bb824621f4b62541087a917a6430baca0dc252aeb3d60",
+      "note": "PLAN-01 G1.1 keccak toolchain canary",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T18:37:20.365Z"
+    },
+    {
+      "name": "KeccakFixture",
+      "contractAddress": "d1e11a787158e4fa8f3bfd7d1823e2af05abafc6f481b2fe7920cfa63cbcd179",
+      "txHash": "75fd217cf151cb2da9850dcb599d56e4d6974770184bc69ad83e65c07bbd9d70",
+      "txId": "007fe2d2fdc23f40a66c625051ddd09b650e6b3d8ff186d731af1a4cd628b2d3d4",
+      "note": "PLAN-01 G1.3 event read-back fixture",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T18:39:26.039Z"
+    }
+  ]
+}

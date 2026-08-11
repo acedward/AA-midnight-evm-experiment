@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "ES2023",
+    "lib": ["ES2023"],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "types": ["node"],
+    "resolveJsonModule": true,
+    "verbatimModuleSyntax": false,
+    // Intra-repo imports use real `.ts` specifiers so `node --experimental-strip-types`
+    // runs the sources directly (no build step, no `.js`-that-is-really-`.ts` fiction).
+    // Safe because noEmit is true — nothing is ever compiled to disk.
+    "allowImportingTsExtensions": true
+  },
+  "include": ["src/**/*.ts", "scripts/**/*.ts", "vitest.config.ts"]
+}

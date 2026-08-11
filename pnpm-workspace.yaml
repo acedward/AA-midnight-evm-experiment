@@ -1,0 +1,21 @@
+# pnpm 11 reads these here, not from package.json's "pnpm" key.
+# package.json still carries `overrides` + `resolutions` for npm/yarn parity;
+# this file is what pnpm actually enforces. Keep the three in sync.
+
+# One WASM copy rule (PLAN-01 §Version pins): ledger / onchain-runtime / zswap /
+# compact-runtime hold module-level WASM state. A second resolution anywhere in
+# the tree surfaces as cross-instance type errors that look like data corruption.
+overrides:
+  "@midnightntwrk/ledger-v9": "1.0.0-rc.3"
+  "@midnightntwrk/onchain-runtime-v4": "4.0.0-rc.3"
+  "@midnight-ntwrk/zswap": "4.0.0"
+  "@midnight-ntwrk/compact-runtime": "0.18.0-rc.1"
+  "@midnight-ntwrk/platform-js": "3.0.0"
+
+# pnpm blocks install scripts by default. classic-level backs
+# levelPrivateStateProvider (native LevelDB), esbuild backs vitest's transform,
+# msgpackr-extract is a level dependency.
+onlyBuiltDependencies:
+  - classic-level
+  - esbuild
+  - msgpackr-extract

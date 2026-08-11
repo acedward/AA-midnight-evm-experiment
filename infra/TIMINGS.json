@@ -1,0 +1,101 @@
+{
+  "_comment": "Measured prove+finalize wall-clock per circuit call on the persistent Part-0 stack. Written by src/timings.ts. Input to PLAN-05's async relayer design; NOT a benchmark suite — these are the real end-to-end latencies the gates observed.",
+  "timings": [
+    {
+      "contract": "prove-verify-secp256k1",
+      "circuit": "verifyAndStore",
+      "note": "G1.2 Wycheproof tcId 346 (k*G has a large x-coordinate)",
+      "millis": 23991,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T18:14:43.966Z"
+    },
+    {
+      "contract": "prove-ethereum-address-secp256k1",
+      "circuit": "storeEthereumAddress",
+      "note": "G1.2 eth-address KAT seed=cow",
+      "millis": 23958,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T18:15:38.643Z"
+    },
+    {
+      "contract": "prove-ethereum-address-secp256k1",
+      "circuit": "storeEthereumAddress",
+      "note": "G1.2 eth-address KAT seed=horse",
+      "millis": 24008,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T18:16:02.655Z"
+    },
+    {
+      "contract": "prove-recover-address-secp256k1",
+      "circuit": "recoverAddr",
+      "note": "G1.2 recover + eth-address derivation",
+      "millis": 30660,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T18:17:14.758Z"
+    },
+    {
+      "contract": "prove-verify-secp256k1",
+      "circuit": "verifyAndStore",
+      "note": "G1.2 Wycheproof tcId 346 (k*G has a large x-coordinate)",
+      "millis": 23988,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T18:22:56.932Z"
+    },
+    {
+      "contract": "prove-ethereum-address-secp256k1",
+      "circuit": "storeEthereumAddress",
+      "note": "G1.2 eth-address KAT seed=cow",
+      "millis": 24026,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T18:23:50.409Z"
+    },
+    {
+      "contract": "prove-ethereum-address-secp256k1",
+      "circuit": "storeEthereumAddress",
+      "note": "G1.2 eth-address KAT seed=horse",
+      "millis": 24024,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T18:24:14.443Z"
+    },
+    {
+      "contract": "prove-recover-address-secp256k1",
+      "circuit": "recoverAddr",
+      "note": "G1.2 recover + eth-address derivation",
+      "millis": 30666,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T18:25:26.568Z"
+    },
+    {
+      "contract": "prove-verify-secp256k1",
+      "circuit": "verifyAndStore",
+      "note": "G1.2 Wycheproof tcId 346 (k*G has a large x-coordinate)",
+      "millis": 24021,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T18:33:50.541Z"
+    },
+    {
+      "contract": "prove-ethereum-address-secp256k1",
+      "circuit": "storeEthereumAddress",
+      "note": "G1.2 eth-address KAT seed=cow",
+      "millis": 23994,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T18:34:43.990Z"
+    },
+    {
+      "contract": "prove-ethereum-address-secp256k1",
+      "circuit": "storeEthereumAddress",
+      "note": "G1.2 eth-address KAT seed=horse",
+      "millis": 24059,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T18:35:08.057Z"
+    },
+    {
+      "contract": "prove-recover-address-secp256k1",
+      "circuit": "recoverAddr",
+      "note": "G1.2 recover + eth-address derivation",
+      "millis": 29353,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T18:36:20.199Z"
+    }
+  ]
+}
