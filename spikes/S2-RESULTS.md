@@ -1,16 +1,19 @@
 # S2 — hosted stagenet proving
 
-**Status: DEFERRED, with the decision it waits on written down.** This plan's own instruction is
-"de-risk early if stagenet is a deployment target; skip if local-only", and nothing in the plan
-set has yet made stagenet a target. What follows is the evidence gathered without deploying
-anything, and the exact checklist for running S2 the day the answer changes.
+**Status: NOT RUN, by decision.** Edward, 2026-08-11: *"it should eventually work; but by
+default we want to target the local undeployed."* So stagenet gates nothing in v1 and this
+spike stays unrun — but nothing may make it impossible, and what the plans owe instead is that
+running S2 later costs a day rather than a rewrite (the four portability constraints in PLAN-02
+§Questions Q7). What follows is the evidence gathered without deploying anything, and the exact
+checklist for the day someone wants stagenet.
 
 | | |
 |---|---|
 | Date | 2026-08-11 |
-| Blocked on | a deployment-target decision (PLAN-02 §Questions Q7) + a funded stagenet wallet |
+| Decision | local `undeployed` by default; stagenet eventual, not a v1 gate |
+| Still needed to run it | a funded stagenet wallet |
 
-## Why it is deferred rather than run
+## Why it is not run
 
 The plan set as written targets the local Part-0 stack end to end. PLAN-00 §9.3's whole
 acceptance run (V1–V6) is local; `src/genesis-seeds.ts` throws outright on any network id other
@@ -37,22 +40,20 @@ transaction.
 
 ## Runbook when stagenet becomes a target
 
-1. **Decide and record the target** (PLAN-02 §Questions Q7). Everything below is wasted if the
-   answer is "local only".
-2. **Provision a funded wallet.** A stagenet seed with tNIGHT, registered for DUST. Genesis
+1. **Provision a funded wallet.** A stagenet seed with tNIGHT, registered for DUST. Genesis
    seeds do not apply; `assignGenesisSeeds` must be bypassed, not "fixed" — its throw is a guard
    against silently running against an unfunded hosted wallet.
-3. **Keep our own proof server.** There is no public prover for stagenet, and only
+2. **Keep our own proof server.** There is no public prover for stagenet, and only
    `9.0.0-rc.5_experimental` can prove zkir-v3. The local proof server on `AA_PROOF_SERVER`
    works against a remote node — proving is a client-side service, it does not have to live
    near the chain.
-4. **Point STACK.env at the hosted endpoints** in a separate profile (never overwrite the
+3. **Point STACK.env at the hosted endpoints** in a separate profile (never overwrite the
    persistent local one — PLAN-01 Part 0: those addresses in `DEPLOYMENTS.json` only resolve
    against the chain that minted them; a hosted run needs its own `stack` key).
-5. **Re-run the three G1.2 prove-cases** (`src/test/secp256k1.test.ts`) plus `S1CryptoRoot`
+4. **Re-run the three G1.2 prove-cases** (`src/test/secp256k1.test.ts`) plus `S1CryptoRoot`
    (the crypto + CCC combination) against it. Those two together are the whole question:
    in-circuit keccak, ECDSA verify, and Ethereum-address derivation, with and without a
    cross-contract call.
-6. **Expect the failure mode to be a verifier-key dispatch error at submission**, not a proving
+5. **Expect the failure mode to be a verifier-key dispatch error at submission**, not a proving
    error — the proof server is ours and already known good; it is the hosted ledger's
    acceptance of a v3-proved transaction that is untested.

@@ -88,6 +88,11 @@ token is never redeployed and account state is never lost.** The fallback the pl
 "account code is frozen; upgrades = versioned interface (`AccountV2`) + new token deployments" —
 is not needed.
 
-Open, for PLAN-03 to answer: who holds the maintenance authority for a user's account, how that
-key is backed up, and whether `ReplaceAuthority` should hand it to a governance key at deploy
-time. Recorded in PLAN-02 §Questions Q6.
+**Decided 2026-08-11 (Edward): accepted as-is for the demo.** One operator deploys every
+account, nothing needs to outlive the laptop, and the authority question is not worth solving
+now. The warning stands on the record here, in PLAN-02 §Questions Q6, and in PLAN-03 §6:
+upgrade rights belong to whoever deployed the account rather than to the EVM owner, and losing
+the deployer's private-state store freezes that account's code forever — no seed phrase
+recovers it. The fix, when this stops being a demo, is a policy rather than a code change:
+exercise `ReplaceAuthority` at deploy time to hand the authority to a governance key or a
+threshold committee, before any account holds value.
