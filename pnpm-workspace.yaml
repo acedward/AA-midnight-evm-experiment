@@ -19,3 +19,8 @@ onlyBuiltDependencies:
   - classic-level
   - esbuild
   - msgpackr-extract
+
+allowBuilds:
+  classic-level: true
+  esbuild: true
+  msgpackr-extract: true

@@ -3,9 +3,10 @@
 EVM-signature account abstraction on Midnight 2.x. Implementation repo for the
 plan set at `/Users/edwardalvarado/todo/AA/plans/` (start at `PLAN-00-MACRO.md`).
 
-This repo contains **PLAN-01 — infrastructure & toolchain** and **PLAN-02 — de-risk
-spikes & test strategy**. PLAN-03 onward add the Account contract, the token, and
-the relayer.
+This repo contains **PLAN-01 — infrastructure & toolchain**, **PLAN-02 — de-risk
+spikes & test strategy**, and the completed **PLAN-04 §1–2** token fork/restore.
+PLAN-04 §3–4 still wait for PLAN-03's frozen payload and Account interface; the
+relayer remains PLAN-05.
 
 PLAN-02's headline: **S1 is GO** — one `--feature-zkir-v3` circuit can carry
 keccak + secp256k1 ECDSA verification *and* make a cross-contract call, and a
@@ -82,6 +83,32 @@ as the `contract` interface the caller declares (case-sensitive).
 
 Files under `src/` vendored from `compact-end-2-end` carry a header naming the
 upstream revision and every local change.
+
+## PLAN-04 §1–2: TokenAA
+
+`contracts/TokenAA.compact` is the pinned EvmErc20 fork with OpenZeppelin
+`Ownable` vendored under `contracts/vendor/openzeppelin/`. Genesis supply and
+the immutable supply administrator are separate constructor roles. `mint`,
+`mintToEthAddress`, and `_burn(account,value)` require the Ownable secret-key
+witness; ordinary transfer and allowance paths remain holder-authorized.
+
+The focused runtime-0.18 conformance gate is:
+
+```bash
+pnpm exec vitest run src/test/token-aa-conformance.test.ts --reporter=verbose
+```
+
+It recompiles TokenAA in the pinned Docker compiler and then drives the emitted
+artifact directly. No Compose services or ports are involved.
+
+**Breaking change from upstream EvmErc20:** the constructor gains a distinct
+admin argument, witness bindings gain `wit_OwnableSK`, both mint entry points
+are restricted, and `burn(value)` becomes owner-only `_burn(account,value)`.
+Regenerate clients/proofs; the old verifier keys are not interchangeable.
+
+The retained `transferWithEthSig` still uses the old payload without token
+binding. This partial artifact closes only G4.1–G4.2 and is not production-safe;
+cross-token replay protection and `accountTransfer` belong to PLAN-04 §3–4.
 
 Two spike contracts — `contracts/S1bSecpRoot.compact` and
 `contracts/S1bPointRoot.compact` — **do not compile, deliberately**. They are the

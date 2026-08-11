@@ -51,6 +51,11 @@ export interface ContractSource {
   managedName: string;
   /** Extra compactc flags on top of the pinned feature flags. */
   extraFlags?: string[];
+  /**
+   * Evidence-backed exception to the repo's conservative default verifier-key
+   * budget. The compiler still reports and enforces the explicit ceiling.
+   */
+  maxVerifierKeys?: number;
 }
 
 export interface CompileResult {
@@ -126,7 +131,7 @@ export function compileContract(src: ContractSource): CompileResult {
   }
 
   const exportedCircuits = readExportedCircuits(managedDir);
-  const budget = versions().compact.maxExportedCircuits;
+  const budget = src.maxVerifierKeys ?? versions().compact.maxExportedCircuits;
   if (exportedCircuits.length > budget) {
     throw new Error(
       `${src.source} exports ${exportedCircuits.length} circuits; the deploy-tx ` +

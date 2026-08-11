@@ -39,6 +39,28 @@ Working clone for reference: `/Users/edwardalvarado/todo/AA/experiments/compact-
 
 `src/vectors/README.md` carries the upstream provenance notes verbatim.
 
+## PLAN-04 token fork and OpenZeppelin modules
+
+Vendored 2026-08-11 for PLAN-04 §1–2:
+
+| This repo | Upstream | Revision | Local changes |
+|---|---|---|---|
+| `contracts/TokenAA.compact` | `/Users/edwardalvarado/midnight-evm-compat/compact-end-2-end/dapps/evm-erc20/contracts/EvmErc20.compact` | `88ad65d0e23b11352c1194210e03ff64923c1636` | Renamed; separate genesis recipient/admin; genesis left-arm guard; OZ Ownable initialization; owner-gated `mint`/`mintToEthAddress`; self `burn(value)` replaced by owner-gated `_burn(account,value)`. PLAN-04 §3–4 intentionally untouched. |
+| `contracts/vendor/openzeppelin/access/Ownable.compact` | `/Users/edwardalvarado/compact-contracts/contracts/src/access/Ownable.compact` | clone pin `0e9d659084fe6579dd0ff9c49c17ae710dcca480`; body byte-identical to `v0.3.0-alpha.1` / `746724f880199197e4cceff95820181866abcecd` | provenance header only |
+| `contracts/vendor/openzeppelin/utils/Utils.compact` | `/Users/edwardalvarado/compact-contracts/contracts/src/utils/Utils.compact` | clone pin `0e9d659084fe6579dd0ff9c49c17ae710dcca480`; body byte-identical to `v0.3.0-alpha.1` / `746724f880199197e4cceff95820181866abcecd` | provenance header only |
+| `contracts/vendor/openzeppelin/LICENSE` | `/Users/edwardalvarado/compact-contracts/LICENSE` | clone pin `0e9d659084fe6579dd0ff9c49c17ae710dcca480` | none |
+
+OpenZeppelin sources retain their MIT SPDX headers. The token fork retains its
+Apache-2.0 header. The runtime-0.18 conformance adaptation is original test code
+derived behaviorally from OpenZeppelin's `FungibleToken.test.ts`; it does not
+copy the runtime-0.16 simulator implementation.
+
+**Breaking-change warning:** this fork is not ABI/VK-compatible with upstream
+EvmErc20. The constructor has a separate admin argument, generated witnesses
+now require `wit_OwnableSK`, mint entry points reject non-owners, and
+`burn(value)` is replaced by `_burn(account,value)`. Existing clients and proofs
+must regenerate against TokenAA's artifact.
+
 Not vendored — written for this repo: `contracts/S3PureBudget.compact`,
 `contracts/S4*.compact`, `src/maintenance.ts`, `src/rejection-matrix.ts`, and the PLAN-02
 suites under `src/test/`. `src/maintenance.ts` reimplements the update sequence that
@@ -48,8 +70,5 @@ cannot be used here.
 
 ## Still to vendor (later plans)
 
-PLAN-04 forks `EvmErc20.compact` from
-`/Users/edwardalvarado/midnight-evm-compat/compact-end-2-end` @ `feat/evm-token-ethauth`
-and the OpenZeppelin modules from `/Users/edwardalvarado/compact-contracts`;
 PLAN-05 ports `RelayerCore` from `/Users/edwardalvarado/midnight-evm-compat/evm-relayer`.
-Record their commit hashes here when they land.
+Record its commit hash here when it lands.

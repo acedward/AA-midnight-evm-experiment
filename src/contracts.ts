@@ -60,10 +60,26 @@ export const CONTRACTS: readonly ContractSource[] = [
   { source: "S4AccountV1.compact", managedName: "S4Account" },
   { source: "S4Root.compact", managedName: "S4Root" },
 
-  // PLAN-03 adds: { source: "Account.compact", managedName: "Account" }   <- CCC callee,
-  //   the managed dir name MUST stay "Account" because PLAN-04's token declares
-  //   `contract Account { ... }`.
-  // PLAN-04 adds: { source: "TokenAA.compact", managedName: "TokenAA" }   <- CCC root, LAST.
+  // PLAN-03 — the AA core (CCC callee). The managed dir name MUST stay
+  // "Account": it is the `contract Account { ... }` interface name every token
+  // root declares (MiniTokenAA below, PLAN-04 §4's TokenAA later), and the
+  // name is case-sensitive on Linux CI. Compiled BEFORE any root that binds it.
+  { source: "Account.compact", managedName: "Account" },
+  // PLAN-03's token-root harness over the frozen payload (gates G3.2–G3.6) —
+  // the accountTransfer check chain PLAN-04 ports verbatim in front of OZ's
+  // _update. NOT the product token.
+  { source: "MiniTokenAA.compact", managedName: "MiniTokenAA" },
+
+  // PLAN-04 §1–2 — the 0.33 EvmErc20 fork plus OZ Ownable supply control.
+  // The upstream 13-key token has already been deployed live on this compiler
+  // lane. Keep the exception explicit so the repo-wide conservative default
+  // remains 7; G4.4 must still prove the restored bundle deploys locally.
+  // PLAN-04 §4 will extend this entry after PLAN-03's frozen-interface handoff.
+  {
+    source: "TokenAA.compact",
+    managedName: "TokenAA",
+    maxVerifierKeys: 13,
+  },
 ];
 
 export function contractByName(managedName: string): ContractSource {
