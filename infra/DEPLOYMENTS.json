@@ -477,6 +477,78 @@
       "note": "PLAN-03 token B (G3.6 second token)",
       "stack": "midnight-aa-36080",
       "deployedAt": "2026-08-11T21:09:38.954Z"
+    },
+    {
+      "name": "Account",
+      "contractAddress": "14eb4fcd68fb1cb53c1c25b0352b8f972ae9e6fde6da5f671249f9f11f23803f",
+      "txHash": "2c375bce08494f06cd391d2edda838e83ff72b0dbc9f7b7fabded92d29a19dfe",
+      "txId": "0047de5e8c357d7514d8b263c60d454fb6c98cc0f3e23568ab7510b85d6f06c463",
+      "note": "PLAN-05 G5.3 account",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T23:07:32.942Z"
+    },
+    {
+      "name": "MiniTokenAA",
+      "contractAddress": "1913fa53afa24606e5e8294548d74342379152ad3dcbc76131e5bf3ceee2a3dc",
+      "txHash": "a58a046f7fff7ac6b94f6011dbbaf0461812d31f87a59189fd8d8afb7a77df90",
+      "txId": "00da9a8551fda58939a8b79222647f602e45dc6e6b77f4e587dfacfffa1f895a0c",
+      "note": "PLAN-05 G5.3 token",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T23:09:02.326Z"
+    },
+    {
+      "name": "Account",
+      "contractAddress": "8d5094dd026f8e9b5bd49ba10e3678485ec867a38c5933434690c71592e396a6",
+      "txHash": "ec37c4f17ed135efe8306b3596a3ab92abe18b20b5ba6ac49b3b65dd6cc301fb",
+      "txId": "00c4cb16799869363e87130d5189079e0a5cf325f70e1be483a46d2130a31c3634",
+      "note": "PLAN-05 G5.3 account",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T23:14:02.728Z"
+    },
+    {
+      "name": "MiniTokenAA",
+      "contractAddress": "f5b22f053899e9601ad0232265f3093e2d335e2f7c754e6b46921d5b6b2624a4",
+      "txHash": "40484747d6734bdeb3a880bd246d95f7277991cfce45292a00537eb6a36386f5",
+      "txId": "00310948cb09ace881853e1832d30ac2b32d6ab766ab25f30d627232a1df9a470f",
+      "note": "PLAN-05 G5.3 token",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T23:15:38.834Z"
+    },
+    {
+      "name": "TokenAA",
+      "contractAddress": "bbf7236e61dda991405d116f3ff45fa527e0af1fc78ea4727b6d5db794214643",
+      "txHash": "b7e7c2f02b39c60f1d691a9d3c460d4dff85ac23b9e26fc3cd2d6a52d9cd5d6e",
+      "txId": "0088f4dafd27b7e7f9831a9d3db71ed154309108e2c2cfac2da1746be3b2d3e9cc",
+      "note": "PLAN-05 G5.3 event leg (Q4 retarget)",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T23:21:39.136Z"
+    },
+    {
+      "name": "Account",
+      "contractAddress": "8aee6993aa07838ffa04d2807c3393508d09a7cf414b6970aefd6f548976be75",
+      "txHash": "3faa141923339130b67124c5bb48efb01c72e0db0effb5c56517d0ad41bab500",
+      "txId": "00fc88843bf8ef6e9326843439ebb38a6e2cfe436709abfc5456569319fd61bb11",
+      "note": "PLAN-05 G5.3 account",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T23:26:14.152Z"
+    },
+    {
+      "name": "MiniTokenAA",
+      "contractAddress": "77bfb81458edcd62ccc96080659d5844e6b51f654187370e6a70b907adcf9a6d",
+      "txHash": "dc3cc659ea14e14a61853cfb8bb7c1d17d23f1a08d13b67c3f3d02481d428da2",
+      "txId": "00a287e60aea91ccbd632128a967f5ea19405d9f44578f01159b446ebf7e9582c3",
+      "note": "PLAN-05 G5.3 token",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T23:27:50.179Z"
+    },
+    {
+      "name": "TokenAA",
+      "contractAddress": "10ab24da13b6fdbc2fe90a93a7f830acceef8de6aa548df6027c1b3f48d8d651",
+      "txHash": "9d3f484bf34e2d3623293f1119c80c8eb2d277eaa18baf098a07d5d1b5c1b7fd",
+      "txId": "003bbb04bb5749d85a7ca3c87da7db42d53ad9aa8c19378b7dec15f23375c895d2",
+      "note": "PLAN-05 G5.3 event leg (Q4 retarget)",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T23:33:38.441Z"
     }
   ]
 }

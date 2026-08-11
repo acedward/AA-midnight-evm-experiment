@@ -392,6 +392,30 @@
       "millis": 77400,
       "stack": "midnight-aa-36080",
       "measuredAt": "2026-08-11T21:16:01.991Z"
+    },
+    {
+      "contract": "MiniTokenAA",
+      "circuit": "mint",
+      "note": "G5.3 — fund the account",
+      "millis": 18639,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T23:09:20.967Z"
+    },
+    {
+      "contract": "MiniTokenAA",
+      "circuit": "mint",
+      "note": "G5.3 — fund the account",
+      "millis": 17295,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T23:15:56.132Z"
+    },
+    {
+      "contract": "MiniTokenAA",
+      "circuit": "mint",
+      "note": "G5.3 — fund the account",
+      "millis": 18629,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T23:28:08.810Z"
     }
   ]
 }

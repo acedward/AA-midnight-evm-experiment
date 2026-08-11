@@ -172,12 +172,38 @@ export class RelayerCore {
     const { managedDir } = compileContract(contractByName(name));
     const providers = await createProviders(this.wallet, managedDir, `relayer-${name}`);
     const loaded = await loadCompiledModule(managedDir);
-    const handle = bindCompiledContract(
-      name,
-      loaded,
-      opts.witnesses ? { witnesses: opts.witnesses } : { vacantWitnesses: true },
-    );
-    const deployed = await findDeployed(providers, handle, contractAddress, `relayer-${name}`);
+
+    // Witness-bearing tokens (TokenAA declares wit_OwnableSK etc.): the
+    // generated Contract constructor demands a function for EVERY declared
+    // witness, and compact-js's vacant binding provides none. The relayer
+    // holds no witness secrets by design — every relayed circuit carries its
+    // authority in its arguments (usdcx precedent) — so any witness the
+    // constructor names and the caller did not supply is stubbed with a
+    // DENIER that throws if a circuit ever invokes it. Names are discovered
+    // by retrying on the constructor's own error.
+    const witnesses: WitnessImpls = { ...opts.witnesses };
+    let deployed: DeployedContractLike;
+    for (let attempt = 0; ; attempt++) {
+      const handle = bindCompiledContract(
+        name,
+        loaded,
+        Object.keys(witnesses).length > 0 ? { witnesses } : { vacantWitnesses: true },
+      );
+      try {
+        deployed = await findDeployed(providers, handle, contractAddress, `relayer-${name}`);
+        break;
+      } catch (e) {
+        const missing = /function-valued field named (\w+)/.exec(
+          e instanceof Error ? e.message : String(e),
+        )?.[1];
+        if (!missing || witnesses[missing] || attempt >= 16) throw e;
+        witnesses[missing] = () => {
+          throw new Error(
+            `relayer: witness ${missing} is not available — relayed circuits carry their authority in their arguments`,
+          );
+        };
+      }
+    }
     const registered: RegisteredToken = {
       name,
       contractAddress: contractAddress.toLowerCase().replace(/^0x/, ""),

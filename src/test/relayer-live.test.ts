@@ -18,12 +18,18 @@
 //     proving (the relayer-side ordering PLAN-03 moved here);
 //   - routing: a payload for an unregistered token is refused with 404.
 //
-// NOTE on the Transfer event: MiniTokenAA (PLAN-03's harness root) emits no
-// events, so this suite asserts balances via ledger reads. The event leg of
-// G5.3 completes when PLAN-04 §3–4's TokenAA (OZ `_update` + Transfer) lands
-// and registers with this same relayer — recorded in PLAN-05 §Questions.
+// The Transfer-event leg (PLAN-05 Q4 retarget): MiniTokenAA emits no events,
+// so the final block registers PLAN-04's product TokenAA as a SECOND token on
+// the same relayer — one registry, two tokens, one account digest space — and
+// reads the OZ spend+receive events back through the indexer.
 
 import * as http from "node:http";
+
+import {
+  CompactTypeBytes,
+  CompactTypeVector,
+  persistentHash,
+} from "@midnight-ntwrk/compact-runtime";
 
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
@@ -44,6 +50,7 @@ import {
   type DeployResult,
 } from "../contract-ops.ts";
 import { recordDeployment } from "../deployments.ts";
+import { queryContractEvents, rawContainsBytes, sameContractAddress } from "../events.ts";
 import { ROLE_SEEDS } from "../genesis-seeds.ts";
 import { bytesToHex, hexToBytes } from "../hex.ts";
 import { createProviders, type Providers } from "../providers.ts";
@@ -299,4 +306,99 @@ describe("PLAN-05 live — the relayer on the persistent stack (G5.3)", () => {
     expect(status).toBe(404);
     expect(body.code).toBe("unknown-token");
   });
+
+  // ── Q4 retarget: the product TokenAA as a SECOND registered token ─────────
+
+  it("G5.3 event leg — TokenAA joins the registry; relayed transfer emits spend+receive", async () => {
+    // Deploy PLAN-04's TokenAA (owner-gated witnesses held by alice, the
+    // deployer) and fund the SAME account — one digest space across tokens.
+    const TOKEN_OWNER_SK = new Uint8Array(32).fill(0x11);
+    const accountIdType = new CompactTypeVector(1, new CompactTypeBytes(32));
+    const witness = (context: unknown) =>
+      [(context as { privateState: unknown }).privateState, TOKEN_OWNER_SK] as const;
+    const ownerId = {
+      is_left: true,
+      left: persistentHash(accountIdType, [TOKEN_OWNER_SK]),
+      right: { bytes: new Uint8Array(32) },
+    };
+
+    const { managedDir } = compileContract(contractByName("TokenAA"));
+    const providers = await createProviders(alice, managedDir, `TokenAA-plan05-${Date.now()}`);
+    const loaded = await loadCompiledModule(managedDir);
+    const handle = bindCompiledContract("TokenAA", loaded, {
+      witnesses: { wit_OwnableSK: witness, wit_FungibleTokenSK: witness },
+    });
+    const deploy = await deployFresh(providers, handle, "TokenAA-plan05", [
+      "AA Token",
+      "AAT",
+      18n,
+      ownerId,
+      ownerId,
+      0n,
+    ]);
+    recordDeployment({
+      name: "TokenAA",
+      contractAddress: deploy.contractAddress,
+      txHash: deploy.txHash,
+      txId: deploy.txId,
+      note: "PLAN-05 G5.3 event leg (Q4 retarget)",
+    });
+    await callCircuit(deploy.deployed, "mintToAccountAddress", [account.addressBytes, 5_000n]);
+
+    // The relayer (bob) attaches as a non-deployer with VACANT witnesses —
+    // accountTransfer carries all its authority in its arguments.
+    await core.attachToken("TokenAA", { contractAddress: deploy.contractAddress });
+    const registry = (await (await fetch(`${baseUrl}/registry`)).json()) as {
+      tokens: Array<{ name: string }>;
+    };
+    expect(registry.tokens.map((t) => t.name).sort()).toEqual(["MiniTokenAA", "TokenAA"]);
+
+    // Same (account, from) nonce sequence continues across tokens (R7 space).
+    const { payload, signature65 } = signTransfer(10n, 750n, contractAddressBytes(deploy.contractAddress));
+    const { status, body } = await postRelay(payload, signature65);
+    expect(status).toBe(200);
+    const state = await pollUntilTerminal(body.ethTxHash as string);
+    expect(state.phase).toBe("confirmed");
+    const confirmed = state as Extract<SubmissionState, { phase: "confirmed" }>;
+
+    // Balances through OZ bookkeeping…
+    const ledger = await readLedger<{
+      _balances: Iterable<readonly [unknown, bigint]>;
+    }>(providers, deploy.contractAddress, loaded.module);
+    let accountBal = 0n;
+    let recipientBal = 0n;
+    for (const [rawKey, amount] of ledger._balances) {
+      const key = rawKey as {
+        is_left: boolean;
+        left: Uint8Array | { bytes: Uint8Array };
+        right: { bytes: Uint8Array };
+      };
+      if (!key.is_left && bytesToHex(key.right.bytes) === bytesToHex(account.addressBytes)) {
+        accountBal = amount;
+      }
+      const leftBytes = key.left instanceof Uint8Array ? key.left : key.left?.bytes;
+      if (key.is_left && leftBytes && bytesToHex(leftBytes) === bytesToHex(RECIPIENT)) {
+        recipientBal = amount;
+      }
+    }
+    expect(accountBal).toBe(4_250n);
+    expect(recipientBal).toBe(750n);
+
+    // …and the Transfer events, read back through the indexer (G5.3's event leg).
+    let events: Awaited<ReturnType<typeof queryContractEvents>> = [];
+    for (let attempt = 0; attempt < 15 && events.length < 2; attempt++) {
+      events = await queryContractEvents({
+        contractAddress: deploy.contractAddress,
+        transactionHash: confirmed.midnightTxHash,
+        types: ["UNSHIELDED_SPEND", "UNSHIELDED_RECEIVE"],
+      });
+      if (events.length < 2) await new Promise((r) => setTimeout(r, 1_000));
+    }
+    expect(events).toHaveLength(2);
+    expect(
+      events.every((e) => sameContractAddress(e.contractAddress, deploy.contractAddress)),
+    ).toBe(true);
+    expect(events.some((e) => rawContainsBytes(e.raw, account.addressBytes))).toBe(true);
+    expect(events.some((e) => rawContainsBytes(e.raw, RECIPIENT))).toBe(true);
+  }, 600_000);
 });
