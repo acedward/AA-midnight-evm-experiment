@@ -1,8 +1,8 @@
 // Vendored from compact-end-2-end @ 88ad65d0e23b11352c1194210e03ff64923c1636,
 // dapps/evm-erc20/contracts/EvmErc20.compact, 2026-08-11.
 // Local changes: renamed TokenAA; split the genesis recipient from the admin;
-// OpenZeppelin Ownable gates mint, mintToEthAddress, and arbitrary-account
-// _burn. PLAN-04 sections 3-4 are intentionally not present.
+// OpenZeppelin Ownable gates mint, mintToAccountAddress, and arbitrary-account
+// _burn; PLAN-03's frozen Account payload/check chain drives accountTransfer.
 // This file is part of compact-end-2-end.
 // Copyright (C) Midnight Foundation
 // SPDX-License-Identifier: Apache-2.0
@@ -15,6 +15,12 @@ pragma language_version >= 0.25.0;
 
 import CompactStandardLibrary;
 import "./vendor/openzeppelin/access/Ownable" prefix Ownable_;
+
+// Frozen PLAN-03 interface. managed/Account (exact case) pins the deployed
+// Account build's verifier key into TokenAA's expectedVk.
+contract Account {
+  circuit validate(signer: Bytes<20>, digest: Bytes<32>): ContractAddress;
+}
 
 // V1 intentionally exports no Ownable management wrappers: the constructor-set
 // supply administrator is immutable. This avoids unsafe ownership-transfer and
@@ -29,19 +35,12 @@ export ledger _totalSupply: Uint<128>;
 export sealed ledger _name: Opaque<"string">;
 export sealed ledger _symbol: Opaque<"string">;
 export sealed ledger _decimals: Uint<8>;
+export ledger txCount: Counter;
 
 // ── EthAuth (Part E, MIDNIGHT_EVM_AUTH_V1) ────────────────────────────────────
-// Spec: evm-relayer/circuits/PAYLOAD.md (FROZEN). Eth-keyed identities are a
-// second identity branch in the SAME balances map: the 20-byte eth address
-// zero-LEFT-padded to Bytes<32> in the Either user branch. OZ accountIds are
-// persistentHash outputs, so a 12-leading-zero-byte collision is negligible;
-// the two identity kinds are documented in EVENTS.md.
-// EIP-191 digests already consumed (replay set; malleability-safe by keying on
-// the digest — secp256k1EcdsaVerify accepts both s and n−s).
-export ledger _ethConsumedDigests: Set<Bytes<32>>;
-// Expected next EthAuth nonce per eth address (missing key = 0).
-export ledger _ethNonces: Map<Bytes<20>, Uint<64>>;
-
+// The legacy in-token EthAuth state is intentionally retired. TokenAA owns
+// balances; Account owns authorization/replay state. Account balances live on
+// the Either right arm, while user/OZ identities live left.
 witness wit_FungibleTokenSK(): Bytes<32>;
 
 pure circuit canonicalize<T1, T2>(value: Either<T1, T2>): Either<T1, T2> {
@@ -305,28 +304,27 @@ circuit _spendAllowance(
 }
 
 // ── EthAuth circuits (Part E) ─────────────────────────────────────────────────
-// Ported verbatim from evm-relayer/circuits/EthAuth.compact (checks 1–7 of
-// PAYLOAD.md). sig/pk stay witness-private; the payload is disclosed. The
-// emits stay in the exported circuits (compiler Q1: emit in a callee ICEs).
+// The legacy Part-E surface below is replaced by the frozen Account-adapter
+// layout and known-answer vector in contracts/PAYLOAD.md.
 
-// keccak256("MIDNIGHT_EVM_AUTH_V1" ‖ uint256_be(2400))
-pure circuit ethDomainTag(): Bytes<32> {
-  return Bytes[0x1e, 0xae, 0x9b, 0xe7, 0xb7, 0x8e, 0x16, 0x1c,
-               0x5b, 0xaa, 0x66, 0x85, 0xff, 0x28, 0x98, 0x29,
-               0x5a, 0x08, 0x29, 0x7c, 0x7a, 0xa4, 0x43, 0x2c,
-               0x8b, 0xbf, 0xaf, 0x8e, 0xd8, 0xb7, 0xdc, 0x34];
+// keccak256("MIDNIGHT_ACCOUNT_V1" ‖ uint256_be(2400))
+circuit domainTag(): Bytes<32> {
+  return Bytes[0x6d, 0x70, 0x90, 0x3b, 0x12, 0xa9, 0x88, 0x0d,
+               0x4e, 0x1e, 0x03, 0x84, 0x45, 0x92, 0x9b, 0x28,
+               0x6a, 0x97, 0x86, 0xf3, 0x45, 0x1a, 0x8a, 0x43,
+               0x59, 0x1b, 0xe9, 0x82, 0x1f, 0x18, 0x10, 0xfb];
 }
 
-// "\x19Ethereum Signed Message:\n128" — EIP-191 prefix for a 128-byte message.
-pure circuit eip191Prefix(): Bytes<29> {
+// "\x19Ethereum Signed Message:\n176"
+circuit eip191Prefix(): Bytes<29> {
   return Bytes[0x19, 0x45, 0x74, 0x68, 0x65, 0x72, 0x65, 0x75,
                0x6d, 0x20, 0x53, 0x69, 0x67, 0x6e, 0x65, 0x64,
                0x20, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65,
-               0x3a, 0x0a, 0x31, 0x32, 0x38];
+               0x3a, 0x0a, 0x31, 0x37, 0x36];
 }
 
 // Big-endian 16 bytes -> Uint<128>.
-pure circuit beBytesToUint128(b: Bytes<16>): Uint<128> {
+circuit beBytesToUint128(b: Bytes<16>): Uint<128> {
   return (((((((((((((((b[0] as Uint<128>) * 256 + b[1] as Uint<128>) * 256
     + b[2] as Uint<128>) * 256 + b[3] as Uint<128>) * 256
     + b[4] as Uint<128>) * 256 + b[5] as Uint<128>) * 256
@@ -337,102 +335,63 @@ pure circuit beBytesToUint128(b: Bytes<16>): Uint<128> {
     + b[14] as Uint<128>) * 256 + b[15] as Uint<128>;
 }
 
-// Eth address -> the 32-byte identity used in maps and event user branches
-// (zero-LEFT-padded, EVM convention).
-pure circuit ethAddrTo32(addr: Bytes<20>): Bytes<32> {
-  return slice<32>([...pad(12, ""), ...addr], 0) as Bytes<32>;
-}
-
-// Eth address -> the token identity branch (left/user, padded bytes).
-pure circuit ethTarget(addr: Bytes<20>): Either<Bytes<32>, ContractAddress> {
-  return left<Bytes<32>, ContractAddress>(ethAddrTo32(addr));
-}
-
-struct EthAuthResult {
-  fromAddr: Bytes<20>,
-  toAddr: Bytes<20>,
-  amount: Uint<128>,
-  digest: Bytes<32>,
-}
-
-// Verifies payload/sig/pk per PAYLOAD.md checks 1–7 and consumes digest+nonce.
-circuit ethAuthCheck(
-  payload: Bytes<128>,
+// MiniTokenAA.accountTransfer's frozen authorization chain, followed by OZ's
+// single balance mutation path. Cheap checks precede crypto, the Account hop
+// precedes writes, and a rejected root call reverts the full call tree.
+export circuit accountTransfer(
+  account: Account,
+  payload: Bytes<176>,
   sig: Secp256k1EcdsaSignature,
   pk: Secp256k1Point
-): EthAuthResult {
-  const p = disclose(payload);
-
-  // 1. padding bytes are zero
-  assert(slice<24>(p, 104) == pad(24, ""), "EthAuth: nonzero padding");
-  // 2. domain tag binds protocol version + chainId 2400
-  assert(slice<32>(p, 0) == ethDomainTag(), "EthAuth: wrong domain tag");
-
-  // 3. EIP-191 digest, keccak256 over the constant-size 157-byte preimage
-  const preimage = slice<157>([...eip191Prefix(), ...p], 0) as Bytes<157>;
-  const digest = keccak256<Bytes<157>>(preimage);
-
-  // 4. signature verifies for the supplied (untrusted) pk over the digest
-  assert(secp256k1EcdsaVerify(digest, sig, pk), "EthAuth: bad signature");
-
-  // 5. pk is `from`'s key (address bind makes the untrusted pk sound)
-  const fromAddr = slice<20>(p, 32);
-  assert(secp256k1EthereumAddress(pk) == fromAddr, "EthAuth: signer is not from");
-
-  // 6. digest not already consumed (replay + malleability protection)
-  assert(!_ethConsumedDigests.member(digest), "EthAuth: digest already consumed");
-
-  // 7. nonce matches the expected next nonce for `from` (< 2^64)
-  assert(slice<8>(p, 88) == pad(8, ""), "EthAuth: nonce overflows uint64");
-  const nonce = beBytesToUint128(slice<16>(p, 88));
-  const expected = _ethNonces.member(fromAddr) ? _ethNonces.lookup(fromAddr) : 0 as Uint<64>;
-  assert(nonce == expected as Uint<128>, "EthAuth: wrong nonce");
-
-  _ethConsumedDigests.insert(digest);
-  _ethNonces.insert(fromAddr, ((expected as Uint<128>) + 1) as Uint<64>);
-
-  return EthAuthResult {
-    fromAddr: fromAddr,
-    toAddr: slice<20>(p, 52),
-    amount: beBytesToUint128(slice<16>(p, 72)),
-    digest: digest,
-  };
-}
-
-// Eth-keyed transfer: the personal_sign signature IS the authorization (there
-// is no msg.sender on Midnight; anyone may relay a valid tuple). Same _update
-// path and the same event conventions as `transfer`.
-export circuit transferWithEthSig(
-  payload: Bytes<128>,
-  sig: Secp256k1EcdsaSignature,
-  pk: Secp256k1Point
-): [] {
+): ContractAddress {
   assertInitialized();
-  const auth = ethAuthCheck(payload, sig, pk);
-  const fromTarget = ethTarget(auth.fromAddr);
-  const toTarget = ethTarget(auth.toAddr);
-  assert(!isTargetZero(toTarget), "FungibleToken: invalid receiver");
-  _update(fromTarget, toTarget, auth.amount);
+  // Local constraint first: a CCC-only circuit gets no ZK artifacts.
+  txCount.increment(1);
+
+  const p = disclose(payload);
+  assert(slice<3>(p, 173) == pad(3, ""), "TokenAA: nonzero reserved bytes");
+  assert(slice<32>(p, 0) == domainTag(), "TokenAA: wrong domain tag");
+  assert(p[32] == 1, "TokenAA: wrong op selector");
+  const self = kernel.self();
+  assert(slice<32>(p, 33) == self.bytes, "TokenAA: wrong token");
+
+  const preimage: Bytes<205> = slice<205>([...eip191Prefix(), ...p], 0) as Bytes<205>;
+  const digest: Bytes<32> = keccak256<Bytes<205>>(preimage);
+  assert(secp256k1EcdsaVerify(digest, sig, pk), "TokenAA: signature does not verify");
+  const fromAddr: Bytes<20> = slice<20>(p, 97);
+  assert(secp256k1EthereumAddress(pk) == fromAddr, "TokenAA: signer is not from");
+
+  const validated: ContractAddress = disclose(account).validate(fromAddr, digest);
+  assert(validated.bytes == slice<32>(p, 65), "TokenAA: account mismatch");
+
+  const amount: Uint<128> = beBytesToUint128(slice<16>(p, 157));
+  const debit = right<Bytes<32>, ContractAddress>(validated);
+  const credit = left<Bytes<32>, ContractAddress>(slice<32>(p, 117));
+  assert(!isTargetZero(credit), "FungibleToken: invalid receiver");
+  _update(debit, credit, amount);
   emit(UnshieldedSpend {
-    sender: eventTarget(fromTarget),
+    sender: eventTarget(debit),
     domainSep: pad(32, "EVM_ERC20_V1"),
     tokenType: pad(32, ""),
-    amount: auth.amount
+    amount: amount
   });
   emit(UnshieldedReceive {
-    recipient: eventTarget(toTarget),
+    recipient: eventTarget(credit),
     domainSep: pad(32, "EVM_ERC20_V1"),
     tokenType: pad(32, ""),
-    amount: auth.amount
+    amount: amount
   });
+  return validated;
 }
 
-// Owner-gated mint to an eth address; the eth address rides the event's user
-// branch zero-padded to 32.
-export circuit mintToEthAddress(addr: Bytes<20>, amount: Uint<128>): [] {
+// Owner-gated deposit onto an Account contract's right-arm balance. Generic
+// `mint(left(...))` remains the path for padded Ethereum/user identities.
+export circuit mintToAccountAddress(accountAddr: Bytes<32>, amount: Uint<128>): [] {
   assertInitialized();
   Ownable_assertOnlyOwner();
-  const target = ethTarget(disclose(addr));
+  const target = right<Bytes<32>, ContractAddress>(
+    ContractAddress { bytes: disclose(accountAddr) }
+  );
   assert(!isTargetZero(target), "FungibleToken: invalid receiver");
   _update(zeroAccount(), target, disclose(amount));
   emit(UnshieldedReceive {
@@ -443,9 +402,9 @@ export circuit mintToEthAddress(addr: Bytes<20>, amount: Uint<128>): [] {
   });
 }
 
-// Part E extends this internal update path. Every balance write and every
-// transfer event is centralized here; the constructor is the sole no-event
-// exception because Compact forbids constructor-transitive emit.
+// Every balance write is centralized here; exported callers hoist their events
+// because Compact forbids constructor-transitive emit and ICEs on emit in a
+// circuit called by another circuit. The constructor is the sole exception.
 circuit _update(
   fromAddress: Either<Bytes<32>, ContractAddress>,
   to: Either<Bytes<32>, ContractAddress>,

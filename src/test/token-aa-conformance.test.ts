@@ -19,10 +19,16 @@ import {
   dummyContractAddress,
   persistentHash,
 } from "@midnight-ntwrk/compact-runtime";
-import { secp256k1 } from "@noble/curves/secp256k1.js";
-import { keccak_256 } from "@noble/hashes/sha3.js";
-
+import {
+  OP_APPROVE,
+  OP_TRANSFER,
+  padEthAddress,
+  signAccountPayload,
+  type PayloadFields,
+} from "../account-payload.ts";
 import { CONTRACTS_ROOT, managedDirFor, readExportedCircuits } from "../compile.ts";
+import { contractAddressBytes } from "../contract-ops.ts";
+import { flipS } from "../secp256k1-vectors.ts";
 
 const NAME = "TokenAA";
 const OWNER_SK = new Uint8Array(32).fill(0x11);
@@ -83,7 +89,7 @@ interface TokenLedger {
     member(owner: Account): boolean;
     lookup(owner: Account): { member(spender: Account): boolean; lookup(spender: Account): bigint };
   };
-  _ethNonces: { member(address: Uint8Array): boolean; lookup(address: Uint8Array): bigint };
+  readonly txCount: bigint;
 }
 
 const accountIdType = new CompactTypeVector(1, new CompactTypeBytes(32));
@@ -104,7 +110,7 @@ async function compileTokenArtifact(): Promise<string> {
     // Vitest's worker RPC heartbeat is not starved while the gate compiles.
     const child = spawn(
       process.execPath,
-      ["--experimental-strip-types", "src/compile-cli.ts", NAME],
+      ["--experimental-strip-types", "src/compile-cli.ts", "Account", NAME],
       { cwd: repoRoot, stdio: ["ignore", "pipe", "pipe"] },
     );
     let stdout = "";
@@ -144,64 +150,9 @@ function nextSeed(): string {
   return seedCounter.toString(16).padStart(64, "0");
 }
 
-function beBytes(value: bigint, width: number): Uint8Array {
-  const out = new Uint8Array(width);
-  let remaining = value;
-  for (let i = width - 1; i >= 0; i -= 1) {
-    out[i] = Number(remaining & 0xffn);
-    remaining >>= 8n;
-  }
-  return out;
-}
-
-function legacyDomainTag(): Uint8Array {
-  const preimage = new Uint8Array(52);
-  preimage.set(new TextEncoder().encode("MIDNIGHT_EVM_AUTH_V1"));
-  preimage.set(beBytes(2_400n, 32), 20);
-  return keccak_256(preimage);
-}
-
-function legacyPayload(
-  from: Uint8Array,
-  to: Uint8Array,
-  amount: bigint,
-  nonce: bigint,
-): Uint8Array {
-  const payload = new Uint8Array(128);
-  payload.set(legacyDomainTag());
-  payload.set(from, 32);
-  payload.set(to, 52);
-  payload.set(beBytes(amount, 16), 72);
-  payload.set(beBytes(nonce, 16), 88);
-  return payload;
-}
-
-function signLegacyPayload(payload: Uint8Array, privateKey: Uint8Array) {
-  const prefix = new TextEncoder().encode("\x19Ethereum Signed Message:\n128");
-  const preimage = new Uint8Array(prefix.length + payload.length);
-  preimage.set(prefix);
-  preimage.set(payload, prefix.length);
-  const digest = keccak_256(preimage);
-  const signature = secp256k1.Signature.fromBytes(
-    secp256k1.sign(digest, privateKey, { prehash: false, format: "recovered" }),
-    "recovered",
-  );
-  const point = secp256k1.Point.fromBytes(secp256k1.getPublicKey(privateKey, false)).toAffine();
-  return { sig: { r: signature.r, s: signature.s }, pk: { x: point.x, y: point.y } };
-}
-
-function ethereumAddress(privateKey: Uint8Array): Uint8Array {
-  return keccak_256(secp256k1.getPublicKey(privateKey, false).slice(1)).slice(12);
-}
-
-function ethAccount(address: Uint8Array): Account {
-  const padded = new Uint8Array(32);
-  padded.set(address, 12);
-  return user(padded);
-}
-
 class TokenSimulator {
   private context: any;
+  readonly addressBytes: Uint8Array;
   readonly owner = user(accountId(OWNER_SK));
   readonly bob = user(accountId(BOB_SK));
   readonly carol = user(accountId(CAROL_SK));
@@ -213,9 +164,11 @@ class TokenSimulator {
     this.asOwner = new module.Contract(witnesses(OWNER_SK));
     this.asBob = new module.Contract(witnesses(BOB_SK));
     this.asCarol = new module.Contract(witnesses(CAROL_SK));
+    const address = dummyContractAddress();
+    this.addressBytes = contractAddressBytes(String(address));
     this.context = createCircuitContext(
       "totalSupply",
-      dummyContractAddress(),
+      address,
       initial.currentZswapLocalState.coinPublicKey,
       initial.currentContractState,
       initial.currentPrivateState,
@@ -279,18 +232,18 @@ describe("G4.1 — TokenAA 0.33 artifact", () => {
   it("loads all expected verifier keys and constructs initialized metadata/state", async () => {
     expect(Object.keys(module.expectedVk).sort()).toEqual([
       "_burn",
+      "accountTransfer",
       "allowance",
       "approve",
       "balanceOf",
       "decimals",
       "mint",
-      "mintToEthAddress",
+      "mintToAccountAddress",
       "name",
       "symbol",
       "totalSupply",
       "transfer",
       "transferFrom",
-      "transferWithEthSig",
     ]);
 
     const token = await TokenSimulator.create();
@@ -524,24 +477,24 @@ describe("G4.2 — ERC20 conformance", () => {
     );
   });
 
-  it("owner-gates mintToEthAddress and stores the zero-left-padded identity", async () => {
+  it("owner-gates mintToAccountAddress and stores a right-arm balance", async () => {
     const token = await TokenSimulator.create(0n);
-    const ethAddress = new Uint8Array(20).fill(0x42);
-    const padded = new Uint8Array(32);
-    padded.set(ethAddress, 12);
+    const accountAddress = new Uint8Array(32).fill(0x42);
+    const target = contractAddress(accountAddress);
 
-    await token.call(token.asOwner, "mintToEthAddress", ethAddress, 90n);
-    expect(token.ledger()._balances.lookup(user(padded))).toBe(90n);
+    await token.call(token.asOwner, "mintToAccountAddress", accountAddress, 90n);
+    expect(token.ledger()._balances.lookup(target)).toBe(90n);
+    expect(token.ledger()._totalSupply).toBe(90n);
     await token.rejects(
       token.asBob,
-      "mintToEthAddress",
-      [ethAddress, 1n],
+      "mintToAccountAddress",
+      [accountAddress, 1n],
       /caller is not the owner/,
     );
     await token.rejects(
       token.asOwner,
-      "mintToEthAddress",
-      [new Uint8Array(20), 1n],
+      "mintToAccountAddress",
+      [new Uint8Array(32), 1n],
       /invalid receiver/,
     );
   });
@@ -583,45 +536,103 @@ describe("G4.2 — ERC20 conformance", () => {
   });
 });
 
-describe("PLAN-04 §2 — retained legacy EthAuth seam (not G4.3)", () => {
-  it("accepts a valid relayed transfer and rejects replay, wrong nonce, and signer mismatch", async () => {
+describe("G4.3 — frozen Account payload rejection matrix in TokenAA", () => {
+  const SIGNER_PRIV = "4c0883a69102937d6231471b5dbb6204fe5129617082792ae468d01a3f362318";
+  const STRANGER_PRIV = "0000000000000000000000000000000000000000000000000000000000000abc";
+  const ACCOUNT_REF = { bytes: new Uint8Array(32).fill(0xbb) };
+
+  function fields(
+    token: TokenSimulator,
+    overrides: Partial<PayloadFields> = {},
+  ): Omit<PayloadFields, "from"> {
+    return {
+      op: OP_TRANSFER,
+      token: token.addressBytes,
+      account: ACCOUNT_REF.bytes,
+      to: padEthAddress(`0x${"cc".repeat(20)}`),
+      nonce: 1n,
+      amount: 500n,
+      ...overrides,
+    };
+  }
+
+  const callTransfer = (token: TokenSimulator, payload: Uint8Array, sig: unknown, pk: unknown) =>
+    token.call(token.asCarol, "accountTransfer", ACCOUNT_REF, payload, sig, pk);
+
+  it("rejects nonzero reserved bytes, a foreign domain, and a non-transfer op in order", async () => {
     const token = await TokenSimulator.create(0n);
-    const signerKey = new Uint8Array(32).fill(0x42);
-    const from = ethereumAddress(signerKey);
-    const to = new Uint8Array(20).fill(0xb0);
+    const valid = signAccountPayload(SIGNER_PRIV, fields(token));
 
-    await token.call(token.asOwner, "mintToEthAddress", from, 100n);
-    const payload = legacyPayload(from, to, 60n, 0n);
-    const signed = signLegacyPayload(payload, signerKey);
-    await token.call(token.asCarol, "transferWithEthSig", payload, signed.sig, signed.pk);
-
-    expect(token.ledger()._balances.lookup(ethAccount(from))).toBe(40n);
-    expect(token.ledger()._balances.lookup(ethAccount(to))).toBe(60n);
-    expect(token.ledger()._ethNonces.lookup(from)).toBe(1n);
-
-    await token.rejects(
-      token.asCarol,
-      "transferWithEthSig",
-      [payload, signed.sig, signed.pk],
-      /digest already consumed/,
+    const reserved = Uint8Array.from(valid.payload);
+    reserved[174] = 1;
+    await expect(callTransfer(token, reserved, valid.sig, valid.pk)).rejects.toThrow(
+      /nonzero reserved bytes/,
     );
 
-    const wrongNonce = legacyPayload(from, to, 1n, 5n);
-    const wrongNonceSig = signLegacyPayload(wrongNonce, signerKey);
-    await token.rejects(
-      token.asCarol,
-      "transferWithEthSig",
-      [wrongNonce, wrongNonceSig.sig, wrongNonceSig.pk],
-      /wrong nonce/,
+    const domain = Uint8Array.from(valid.payload);
+    domain[0]! ^= 0xff;
+    await expect(callTransfer(token, domain, valid.sig, valid.pk)).rejects.toThrow(
+      /wrong domain tag/,
     );
 
-    const wrongFrom = legacyPayload(to, from, 1n, 0n);
-    const wrongFromSig = signLegacyPayload(wrongFrom, signerKey);
-    await token.rejects(
-      token.asCarol,
-      "transferWithEthSig",
-      [wrongFrom, wrongFromSig.sig, wrongFromSig.pk],
-      /signer is not from/,
+    const approve = signAccountPayload(SIGNER_PRIV, fields(token, { op: OP_APPROVE }));
+    await expect(callTransfer(token, approve.payload, approve.sig, approve.pk)).rejects.toThrow(
+      /wrong op selector/,
     );
+    expect(token.ledger().txCount).toBe(0n);
+  });
+
+  it("rejects a payload bound to another TokenAA instance before signature work", async () => {
+    const token = await TokenSimulator.create(0n);
+    const foreign = signAccountPayload(SIGNER_PRIV, {
+      ...fields(token),
+      token: new Uint8Array(32).fill(0xee),
+    });
+    await expect(callTransfer(token, foreign.payload, foreign.sig, foreign.pk)).rejects.toThrow(
+      /wrong token/,
+    );
+  });
+
+  it("rejects garbage signatures and every tampered signed field", async () => {
+    const token = await TokenSimulator.create(0n);
+    const valid = signAccountPayload(SIGNER_PRIV, fields(token));
+    await expect(
+      callTransfer(token, valid.payload, { r: valid.sig.r, s: valid.sig.s ^ 1n }, valid.pk),
+    ).rejects.toThrow(/signature does not verify/);
+
+    for (const at of [100, 120, 152, 160]) {
+      const tampered = Uint8Array.from(valid.payload);
+      tampered[at]! ^= 1;
+      await expect(callTransfer(token, tampered, valid.sig, valid.pk)).rejects.toThrow(
+        /signature does not verify/,
+      );
+    }
+  });
+
+  it("binds the supplied public key to payload.from", async () => {
+    const token = await TokenSimulator.create(0n);
+    const owner = signAccountPayload(SIGNER_PRIV, fields(token));
+    const stranger = signAccountPayload(STRANGER_PRIV, {
+      ...fields(token),
+      from: owner.fields.from,
+    });
+    await expect(
+      callTransfer(token, stranger.payload, stranger.sig, stranger.pk),
+    ).rejects.toThrow(/signer is not from/);
+  });
+
+  it("accepts the flipped-s twin through every pre-hop check; replay is digest-owned", async () => {
+    const token = await TokenSimulator.create(0n);
+    const valid = signAccountPayload(SIGNER_PRIV, fields(token));
+    let message = "";
+    try {
+      await callTransfer(token, valid.payload, flipS(valid.sig), valid.pk);
+    } catch (error) {
+      message = String(error);
+    }
+    expect(message).not.toMatch(
+      /signature does not verify|wrong token|wrong domain|wrong op|reserved|signer is not from/,
+    );
+    expect(token.ledger().txCount).toBe(0n);
   });
 });

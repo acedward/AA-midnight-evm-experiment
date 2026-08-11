@@ -5,8 +5,8 @@ plan set at `/Users/edwardalvarado/todo/AA/plans/` (start at `PLAN-00-MACRO.md`)
 
 This repo contains **PLAN-01 — infrastructure & toolchain**, **PLAN-02 — de-risk
 spikes & test strategy**, **PLAN-03 — the Account contract + frozen payload**,
-the completed **PLAN-04 §1–2** token fork/restore (§3–4 — the `accountTransfer`
-adapter — still open), and **PLAN-05 — the signer client & relayer**.
+the completed **PLAN-04** OZ TokenAA fork + `accountTransfer` adapter, and
+**PLAN-05 — the signer client & relayer**.
 
 PLAN-02's headline: **S1 is GO** — one `--feature-zkir-v3` circuit can carry
 keccak + secp256k1 ECDSA verification *and* make a cross-contract call, and a
@@ -20,6 +20,13 @@ One long-running local Midnight 2.x network backs every phase of the project.
 Proof public params take minutes to download, a proof takes tens of seconds, and
 contract addresses recorded in `infra/DEPLOYMENTS.json` are re-attached by later
 plans against *this* chain. Restarting is expensive; wiping it is destructive.
+
+> **2026-08-11 incident:** Docker disk exhaustion stopped the node long enough
+> for the non-archive chain to prune state needed by a restarted indexer. Node
+> chain data and proof params are preserved, but the persistent indexer cannot
+> recover without the explicit human-gated reset in PLAN-05 Q2. PLAN-04's live
+> gate used and tore down an isolated random-port stack; it did not overwrite
+> `STACK.env` or record disposable addresses.
 
 ```bash
 ./infra/stack-up.sh
@@ -84,13 +91,22 @@ as the `contract` interface the caller declares (case-sensitive).
 Files under `src/` vendored from `compact-end-2-end` carry a header naming the
 upstream revision and every local change.
 
-## PLAN-04 §1–2: TokenAA
+## PLAN-04: TokenAA + Account adapter
 
 `contracts/TokenAA.compact` is the pinned EvmErc20 fork with OpenZeppelin
 `Ownable` vendored under `contracts/vendor/openzeppelin/`. Genesis supply and
 the immutable supply administrator are separate constructor roles. `mint`,
-`mintToEthAddress`, and `_burn(account,value)` require the Ownable secret-key
-witness; ordinary transfer and allowance paths remain holder-authorized.
+`mintToAccountAddress`, and `_burn(account,value)` require the Ownable
+secret-key witness; ordinary transfer and allowance paths remain
+holder-authorized. Generic `mint(left(paddedEthAddress), value)` still covers
+Ethereum-shaped identities.
+
+`accountTransfer(account, payload, sig, pk)` uses PLAN-03's frozen
+`MIDNIGHT_ACCOUNT_V1` 176-byte payload. It binds domain, op, token address,
+signer, Account address, recipient, nonce, and amount; calls
+`Account.validate(signer,digest)`; then debits the returned ContractAddress's
+right-arm balance through OZ `_update`. Account owns the digest replay set;
+TokenAA owns balances and emits `UnshieldedSpend` + `UnshieldedReceive`.
 
 The focused runtime-0.18 conformance gate is:
 
@@ -98,17 +114,26 @@ The focused runtime-0.18 conformance gate is:
 pnpm exec vitest run src/test/token-aa-conformance.test.ts --reporter=verbose
 ```
 
-It recompiles TokenAA in the pinned Docker compiler and then drives the emitted
-artifact directly. No Compose services or ports are involved.
+It compiles Account before TokenAA in the pinned Docker compiler and then drives
+the emitted artifact directly. The focused suite is 26/26, including the
+frozen-payload rejection matrix. The live gate is:
+
+```bash
+TOKEN_AA_LIVE_USE_PRECOMPILED=1 pnpm exec vitest run src/test/token-aa-live.test.ts
+```
+
+That suite deploys one Account and two full 13-verifier-key TokenAA instances,
+proves the CCC transfer, checks cross-token/replay/flipped-s rejection and
+post-hop rollback, and reads both transfer events back through the indexer.
 
 **Breaking change from upstream EvmErc20:** the constructor gains a distinct
-admin argument, witness bindings gain `wit_OwnableSK`, both mint entry points
-are restricted, and `burn(value)` becomes owner-only `_burn(account,value)`.
-Regenerate clients/proofs; the old verifier keys are not interchangeable.
-
-The retained `transferWithEthSig` still uses the old payload without token
-binding. This partial artifact closes only G4.1–G4.2 and is not production-safe;
-cross-token replay protection and `accountTransfer` belong to PLAN-04 §3–4.
+admin argument, witness bindings gain `wit_OwnableSK`, mint entry points are
+restricted, and `burn(value)` becomes owner-only `_burn(account,value)`.
+The unsafe legacy `transferWithEthSig` circuit is replaced by `accountTransfer`,
+and the redundant `mintToEthAddress` convenience is replaced by
+`mintToAccountAddress`, keeping the deployed surface at 13 verifier keys.
+Regenerate clients/proofs; old circuit arguments and verifier keys are not
+interchangeable.
 
 ## PLAN-05: signer client & relayer
 

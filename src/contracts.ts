@@ -70,11 +70,10 @@ export const CONTRACTS: readonly ContractSource[] = [
   // _update. NOT the product token.
   { source: "MiniTokenAA.compact", managedName: "MiniTokenAA" },
 
-  // PLAN-04 §1–2 — the 0.33 EvmErc20 fork plus OZ Ownable supply control.
-  // The upstream 13-key token has already been deployed live on this compiler
-  // lane. Keep the exception explicit so the repo-wide conservative default
-  // remains 7; G4.4 must still prove the restored bundle deploys locally.
-  // PLAN-04 §4 will extend this entry after PLAN-03's frozen-interface handoff.
+  // PLAN-04 — the 0.33 EvmErc20 fork, OZ Ownable supply control, and the
+  // frozen Account adapter. Keep the 13-key exception explicit so the
+  // repo-wide conservative default remains 7. G4.3–G4.5 deployed two full
+  // instances and proved the Account call tree + events live.
   {
     source: "TokenAA.compact",
     managedName: "TokenAA",

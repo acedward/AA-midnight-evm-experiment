@@ -57,6 +57,8 @@ const MATRIX_TEST = "src/test/rejection-matrix.test.ts";
 const PAYLOAD_TEST = "src/test/account-payload.test.ts";
 const SIM_TEST = "src/test/account-simulator.test.ts";
 const LIVE_TEST = "src/test/account-live.test.ts";
+const TOKEN_SIM_TEST = "src/test/token-aa-conformance.test.ts";
+const TOKEN_LIVE_TEST = "src/test/token-aa-live.test.ts";
 
 export const REJECTION_MATRIX: readonly RejectionCase[] = [
   {
@@ -65,8 +67,16 @@ export const REJECTION_MATRIX: readonly RejectionCase[] = [
     expects: "accept; balances move; event emitted",
     layers: [1, 2, 3],
     gate: "G2.3",
-    covered: [],
-    blockedBy: "PLAN-04 (the token's Transfer event; S1 proved the balance movement)",
+    covered: [
+      {
+        file: TOKEN_LIVE_TEST,
+        test: "G4.5 — proves accountTransfer and moves OZ balances through the CCC call tree",
+      },
+      {
+        file: TOKEN_LIVE_TEST,
+        test: "G4.4 — exposes spend+receive in the call result and indexer",
+      },
+    ],
     rationale:
       "The positive control. Without it a matrix of rejections proves only that the " +
       "contract rejects everything, which a `return false` also achieves.",
@@ -84,6 +94,10 @@ export const REJECTION_MATRIX: readonly RejectionCase[] = [
       { file: MATRIX_TEST, test: "R2 — malleability is real at layer 1" },
       { file: SIM_TEST, test: "R2 — the flipped-s twin passes the verifier" },
       { file: LIVE_TEST, test: "R6/R2 — replay and its flipped-s twin are both refused" },
+      {
+        file: TOKEN_LIVE_TEST,
+        test: "G4.3 — replay/flipped-s and cross-token replay are inert",
+      },
     ],
     rationale:
       "`secp256k1EcdsaVerify` enforces no low-s rule, so both twins verify. Replay " +
@@ -100,6 +114,10 @@ export const REJECTION_MATRIX: readonly RejectionCase[] = [
     covered: [
       { file: S1, test: "rejects a garbage signature and leaves the CALLEE untouched" },
       { file: MATRIX_TEST, test: "R3 — a mutated signature is rejected at layer 1" },
+      {
+        file: TOKEN_SIM_TEST,
+        test: "rejects garbage signatures and every tampered signed field",
+      },
     ],
     rationale:
       "The base negative. The CCC form matters more than the single-contract form: the " +
@@ -126,6 +144,10 @@ export const REJECTION_MATRIX: readonly RejectionCase[] = [
     covered: [
       { file: PAYLOAD_TEST, test: "changes the digest and kills the signature" },
       { file: SIM_TEST, test: "R5 — tampering a signed field in transit invalidates the signature in-circuit" },
+      {
+        file: TOKEN_SIM_TEST,
+        test: "rejects garbage signatures and every tampered signed field",
+      },
     ],
     rationale:
       "Per-field, not per-payload: a field left out of the digest is invisible to a " +
@@ -141,6 +163,10 @@ export const REJECTION_MATRIX: readonly RejectionCase[] = [
       { file: S1, test: "R6 — rejects the replayed digest, and moves no balance" },
       { file: SIM_TEST, test: "R6 — a consumed digest is refused on the second call" },
       { file: LIVE_TEST, test: "R6/R2 — replay and its flipped-s twin are both refused" },
+      {
+        file: TOKEN_LIVE_TEST,
+        test: "G4.3 — replay/flipped-s and cross-token replay are inert",
+      },
       {
         file: "src/test/relayer-live.test.ts",
         test: "duplicate relay returns the prior result — no second proof, no second move",
@@ -181,12 +207,20 @@ export const REJECTION_MATRIX: readonly RejectionCase[] = [
     covered: [
       { file: SIM_TEST, test: "R8 (shape) — a payload bound to a DIFFERENT token address is refused" },
       { file: LIVE_TEST, test: "R8 — the token-A signature is inert at token B (cross-token replay)" },
+      {
+        file: TOKEN_SIM_TEST,
+        test: "rejects a payload bound to another TokenAA instance before signature work",
+      },
+      {
+        file: TOKEN_LIVE_TEST,
+        test: "G4.3 — replay/flipped-s and cross-token replay are inert",
+      },
     ],
     rationale:
       "The payload carries the token address and the root asserts it equals " +
       "`kernel.self()`. Without this test that assert can be dropped and nothing fails. " +
-      "Proven live with two MiniTokenAA instances (PLAN-03); PLAN-04 G4.3 re-asserts it " +
-      "against the real OZ fork.",
+      "Proven first with two MiniTokenAA instances (PLAN-03), then re-asserted live " +
+      "with two full OZ TokenAA deployments (PLAN-04 G4.3).",
   },
   {
     id: "R9",
@@ -214,6 +248,10 @@ export const REJECTION_MATRIX: readonly RejectionCase[] = [
     gate: "G2.2",
     covered: [
       { file: SIM_TEST, test: "R10 — an APPROVE-op signature is refused on the transfer path" },
+      {
+        file: TOKEN_SIM_TEST,
+        test: "rejects nonzero reserved bytes, a foreign domain, and a non-transfer op in order",
+      },
     ],
     rationale:
       "Operation confusion: without a selector in the digest, an approval signature is " +
@@ -227,6 +265,10 @@ export const REJECTION_MATRIX: readonly RejectionCase[] = [
     gate: "G2.2",
     covered: [
       { file: SIM_TEST, test: "R11 — a foreign domain tag (other chain/version) is refused" },
+      {
+        file: TOKEN_SIM_TEST,
+        test: "rejects nonzero reserved bytes, a foreign domain, and a non-transfer op in order",
+      },
     ],
     rationale: "Cross-chain replay of an identically-shaped intent.",
   },
@@ -243,15 +285,20 @@ export const REJECTION_MATRIX: readonly RejectionCase[] = [
   },
   {
     id: "R13",
-    title: "deposit independence — a permissionless op between signing and submission",
+    title: "funding independence — a deposit/mint between signing and submission",
     expects: "the original signature still lands",
     layers: [3],
     gate: "G2.3",
-    covered: [],
-    blockedBy: "PLAN-04 (needs the token's permissionless entry points)",
+    covered: [
+      {
+        file: TOKEN_LIVE_TEST,
+        test: "post-hop failure rolls back Account replay state and the same signature lands after funding",
+      },
+    ],
     rationale:
-      "passport AUTH-8. A signature invalidated by someone else's deposit is a liveness " +
-      "bug that only shows up under concurrency.",
+      "passport AUTH-8. Funding never touches Account authorization state, so a pending " +
+      "signature remains valid across balance changes; the live test signs once, funds " +
+      "later, and lands that same tuple.",
   },
   {
     id: "R14",
