@@ -53,6 +53,10 @@ export interface RejectionCase {
 
 const S1 = "src/test/s1-ccc.test.ts";
 const MATRIX_TEST = "src/test/rejection-matrix.test.ts";
+// PLAN-03's three layers over the frozen MIDNIGHT_ACCOUNT_V1 payload.
+const PAYLOAD_TEST = "src/test/account-payload.test.ts";
+const SIM_TEST = "src/test/account-simulator.test.ts";
+const LIVE_TEST = "src/test/account-live.test.ts";
 
 export const REJECTION_MATRIX: readonly RejectionCase[] = [
   {
@@ -78,6 +82,8 @@ export const REJECTION_MATRIX: readonly RejectionCase[] = [
       { file: S1, test: "accepts the flipped-s twin" },
       { file: S1, test: "R2 — the flipped-s twin of a consumed signature is rejected too" },
       { file: MATRIX_TEST, test: "R2 — malleability is real at layer 1" },
+      { file: SIM_TEST, test: "R2 — the flipped-s twin passes the verifier" },
+      { file: LIVE_TEST, test: "R6/R2 — replay and its flipped-s twin are both refused" },
     ],
     rationale:
       "`secp256k1EcdsaVerify` enforces no low-s rule, so both twins verify. Replay " +
@@ -117,8 +123,10 @@ export const REJECTION_MATRIX: readonly RejectionCase[] = [
     expects: "reject — the digest changes, so the signature no longer verifies",
     layers: [1, 2],
     gate: "G2.2",
-    covered: [],
-    blockedBy: "PLAN-03 (needs the frozen MIDNIGHT_ACCOUNT_V1 payload with named fields)",
+    covered: [
+      { file: PAYLOAD_TEST, test: "changes the digest and kills the signature" },
+      { file: SIM_TEST, test: "R5 — tampering a signed field in transit invalidates the signature in-circuit" },
+    ],
     rationale:
       "Per-field, not per-payload: a field left out of the digest is invisible to a " +
       "whole-payload test and is exactly how an amount or recipient becomes forgeable.",
@@ -129,17 +137,27 @@ export const REJECTION_MATRIX: readonly RejectionCase[] = [
     expects: 'reject "digest consumed"',
     layers: [2, 3],
     gate: "G2.3",
-    covered: [{ file: S1, test: "R6 — rejects the replayed digest, and moves no balance" }],
+    covered: [
+      { file: S1, test: "R6 — rejects the replayed digest, and moves no balance" },
+      { file: SIM_TEST, test: "R6 — a consumed digest is refused on the second call" },
+      { file: LIVE_TEST, test: "R6/R2 — replay and its flipped-s twin are both refused" },
+    ],
     rationale: "Single-use is the whole point of the consumed-digest set (PLAN-00 §6.2).",
   },
   {
     id: "R7",
     title: "wrong nonce",
-    expects: "reject",
+    expects:
+      "relayer refuses out-of-order nonces; in-circuit a nonce change is a digest change (R5)",
     layers: [1, 2],
     gate: "G2.2",
     covered: [],
-    blockedBy: "PLAN-03 (the auth nonce is part of the payload spec)",
+    blockedBy:
+      "PLAN-05 (relayer-side ordering). PLAN-03 DECISION (recorded in contracts/PAYLOAD.md): " +
+      "replay authority is the digest set ONLY — no ledger nonce, no in-circuit nonce assert, " +
+      "because a strictly-sequential nonce on a public `validate` adds a griefing vector " +
+      "(garbage-digest nonce bumps) the digest set doesn't have. The signed payload nonce " +
+      "provides digest uniqueness + ordering legibility; its tamper-rejection is R5.",
     rationale:
       "A dedicated auth nonce, separate from any global counter, is what keeps " +
       "permissionless deposits from invalidating pending signatures (R13's other half).",
@@ -150,11 +168,15 @@ export const REJECTION_MATRIX: readonly RejectionCase[] = [
     expects: "reject (token binding)",
     layers: [3],
     gate: "G2.3",
-    covered: [],
-    blockedBy: "PLAN-04 (needs two deployed tokens)",
+    covered: [
+      { file: SIM_TEST, test: "R8 (shape) — a payload bound to a DIFFERENT token address is refused" },
+      { file: LIVE_TEST, test: "R8 — the token-A signature is inert at token B (cross-token replay)" },
+    ],
     rationale:
       "The payload carries the token address and the root asserts it equals " +
-      "`kernel.self()`. Without this test that assert can be dropped and nothing fails.",
+      "`kernel.self()`. Without this test that assert can be dropped and nothing fails. " +
+      "Proven live with two MiniTokenAA instances (PLAN-03); PLAN-04 G4.3 re-asserts it " +
+      "against the real OZ fork.",
   },
   {
     id: "R9",
@@ -162,10 +184,17 @@ export const REJECTION_MATRIX: readonly RejectionCase[] = [
     expects: "reject (account binding)",
     layers: [3],
     gate: "G2.4",
-    covered: [],
-    blockedBy: "PLAN-03/04 (needs two deployed accounts and the account-bound payload)",
+    covered: [
+      {
+        file: LIVE_TEST,
+        test: "G3.5 — cross-account replay rejected, atomically (two accounts, one owner, one signature)",
+      },
+    ],
     rationale:
-      "One owner may hold several accounts; a signature for one must be inert at another.",
+      "One owner may hold several accounts; a signature for one must be inert at another. " +
+      "The bind is against the ContractAddress `validate` RETURNED (kernel.self()), never " +
+      "against a passed-in address — and the rejection reverts the wrong account's digest " +
+      "insert atomically.",
   },
   {
     id: "R10",
@@ -173,8 +202,9 @@ export const REJECTION_MATRIX: readonly RejectionCase[] = [
     expects: "reject",
     layers: [1, 2],
     gate: "G2.2",
-    covered: [],
-    blockedBy: "PLAN-03 (the op selector is part of the payload spec)",
+    covered: [
+      { file: SIM_TEST, test: "R10 — an APPROVE-op signature is refused on the transfer path" },
+    ],
     rationale:
       "Operation confusion: without a selector in the digest, an approval signature is " +
       "also a transfer signature.",
@@ -185,8 +215,9 @@ export const REJECTION_MATRIX: readonly RejectionCase[] = [
     expects: "reject",
     layers: [1, 2],
     gate: "G2.2",
-    covered: [],
-    blockedBy: "PLAN-03 (the domain tag is part of the payload spec)",
+    covered: [
+      { file: SIM_TEST, test: "R11 — a foreign domain tag (other chain/version) is refused" },
+    ],
     rationale: "Cross-chain replay of an identically-shaped intent.",
   },
   {
@@ -222,6 +253,10 @@ export const REJECTION_MATRIX: readonly RejectionCase[] = [
       {
         file: S1,
         test: "R14 — a direct validate burns the digest; the relay fails cleanly and re-signing recovers",
+      },
+      {
+        file: LIVE_TEST,
+        test: "G3.4 — griefing containment: direct validate burn → clean failure → re-sign recovers",
       },
     ],
     rationale:

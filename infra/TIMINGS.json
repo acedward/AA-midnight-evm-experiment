@@ -328,6 +328,70 @@
       "millis": 30696,
       "stack": "midnight-aa-36080",
       "measuredAt": "2026-08-11T20:21:09.104Z"
+    },
+    {
+      "contract": "MiniTokenAA",
+      "circuit": "mint",
+      "note": "G3.3 — mint on token A",
+      "millis": 17281,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T21:09:56.249Z"
+    },
+    {
+      "contract": "MiniTokenAA",
+      "circuit": "mint",
+      "note": "G3.6 — mint on token B",
+      "millis": 18685,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T21:10:14.935Z"
+    },
+    {
+      "contract": "MiniTokenAA",
+      "circuit": "accountTransfer",
+      "note": "G3.3 — first proven accountTransfer over the frozen payload",
+      "millis": 65407,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T21:11:20.355Z"
+    },
+    {
+      "contract": "MiniTokenAA",
+      "circuit": "accountTransfer",
+      "note": "G3.5 — intended relay lands after the cross-account attempt",
+      "millis": 54474,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T21:12:15.135Z"
+    },
+    {
+      "contract": "Account",
+      "circuit": "validate",
+      "note": "G3.4 — direct validate call burns the observed digest (R14)",
+      "millis": 17274,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T21:12:32.429Z"
+    },
+    {
+      "contract": "MiniTokenAA",
+      "circuit": "accountTransfer",
+      "note": "G3.4 — re-signed operation lands (R14 recovery)",
+      "millis": 60024,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T21:13:32.526Z"
+    },
+    {
+      "contract": "MiniTokenAA",
+      "circuit": "accountTransfer",
+      "note": "G3.6 — same account authorizes a transfer on the SECOND token",
+      "millis": 53381,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T21:14:25.920Z"
+    },
+    {
+      "contract": "MiniTokenAA",
+      "circuit": "accountTransfer",
+      "note": "G3.4/atomicity — the once-underfunded signature lands after a deposit",
+      "millis": 77400,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T21:16:01.991Z"
     }
   ]
 }

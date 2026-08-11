@@ -1,0 +1,138 @@
+// Account.compact — the AA core (PLAN-03 §3, PLAN-00 §4).
+//
+// One instance per owner; ALL instances are the identical build (expectedVk
+// binding — PLAN-00 §4 rule 4). The managed dir MUST be named exactly
+// "Account": that is the `contract` interface name every token root declares,
+// and the name is case-sensitive on Linux CI.
+//
+// CCC-callee rules: NO witnesses, NO private state, NO zswap. The boundary is
+// bytes-only (design rule 2, S1b RED) — the ECDSA signature is verified in the
+// TOKEN ROOT; this contract receives only the signer address and the digest.
+//
+// Trust model (documented, accepted): `validate` trusts its arguments exactly
+// as far as the USER trusts the token they signed for. The digest the user
+// signed binds the token address (PAYLOAD.md bytes 33..65), so a rogue root
+// can only consume digests that were signed FOR IT. Re-verifying the signature
+// here is structurally impossible today (secp types cannot cross the CCC
+// boundary — spike S1b crashes the zkir backend).
+//
+// Replay policy (PLAN-03 §3 griefing note, default taken as recorded):
+// DIGEST-SET ONLY. There is no ledger nonce and no nonce argument:
+//   - `validate` is a public entry point (no kernel.caller() on this lane), so
+//     any strictly-sequential ledger nonce is griefable — an observer could
+//     desync it with garbage digests, adding a denial vector the digest set
+//     does not have.
+//   - The payload's uint64 nonce (bytes 149..157) is still SIGNED — it makes
+//     otherwise-identical intents produce distinct digests and gives clients/
+//     relayers an ordering handle — but ordering is enforced off-chain.
+//   - Malleability-proof by construction: (r,s) and (r,n−s) share one digest.
+//
+// Griefing containment (S1 R14, live-proven): anyone holding an observed
+// (payload, sig, pk) can burn that ONE digest; the owner re-signs and recovers.
+//
+// The pure circuits are the canonical-digest oracles (PLAN-03 §5): exported so
+// TS calls them via `pureCircuits` with zero proofs, and free of the ≤7
+// verifier-key deploy budget (spike S3 — pure exports emit no VK, no zkir).
+
+pragma language_version >= 0.25.0;
+
+import CompactStandardLibrary;
+
+// ── Ledger ───────────────────────────────────────────────────────────────────
+
+// The Ethereum key that controls this account (set once, in the constructor).
+export ledger owner: Bytes<20>;
+// Every digest this account has already authorized — THE replay authority.
+export ledger consumedDigests: Set<Bytes<32>>;
+// Probe convenience for tests/indexers; carries no authorization meaning.
+export ledger validateCount: Counter;
+
+constructor(owner_: Bytes<20>) {
+  owner = disclose(owner_);
+}
+
+// ── Frozen constants (contracts/PAYLOAD.md — version, never edit) ────────────
+
+// keccak256("MIDNIGHT_ACCOUNT_V1" ‖ uint256_be(2400))
+circuit domainTag(): Bytes<32> {
+  return Bytes[0x6d, 0x70, 0x90, 0x3b, 0x12, 0xa9, 0x88, 0x0d,
+               0x4e, 0x1e, 0x03, 0x84, 0x45, 0x92, 0x9b, 0x28,
+               0x6a, 0x97, 0x86, 0xf3, 0x45, 0x1a, 0x8a, 0x43,
+               0x59, 0x1b, 0xe9, 0x82, 0x1f, 0x18, 0x10, 0xfb];
+}
+
+// "\x19Ethereum Signed Message:\n176" — EIP-191 prefix for a 176-byte message.
+circuit eip191Prefix(): Bytes<29> {
+  return Bytes[0x19, 0x45, 0x74, 0x68, 0x65, 0x72, 0x65, 0x75,
+               0x6d, 0x20, 0x53, 0x69, 0x67, 0x6e, 0x65, 0x64,
+               0x20, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65,
+               0x3a, 0x0a, 0x31, 0x37, 0x36];
+}
+
+// Little-endian (Compact's `as Bytes<32>` cast) -> big-endian (the spec).
+circuit reverseBytes32(b: Bytes<32>): Bytes<32> {
+  return Bytes[b[31], b[30], b[29], b[28], b[27], b[26], b[25], b[24],
+               b[23], b[22], b[21], b[20], b[19], b[18], b[17], b[16],
+               b[15], b[14], b[13], b[12], b[11], b[10], b[9],  b[8],
+               b[7],  b[6],  b[5],  b[4],  b[3],  b[2],  b[1],  b[0]];
+}
+
+// ── The one provable entry point ─────────────────────────────────────────────
+
+// Bind signer→owner, consume the digest, attest this contract's own identity.
+//
+// The caller (the token root) has already: recomputed the EIP-191 digest from
+// the full payload, verified the ECDSA signature over it, and derived `signer`
+// from the public key in-circuit. This circuit's job is the owner binding and
+// the single-use guarantee — and its return value IS the root's balance key:
+// a contract handle and a ContractAddress cannot be related in Compact, so the
+// only address a root may trust is the one produced by kernel.self() inside
+// THIS contract's own proof (design rule 1, S1 step 3).
+export circuit validate(signer: Bytes<20>, digest: Bytes<32>): ContractAddress {
+  const who = disclose(signer);
+  const d = disclose(digest);
+  assert(who == owner, "Account: signer is not the account owner");
+  assert(!consumedDigests.member(d), "Account: digest already consumed");
+  consumedDigests.insert(d);
+  validateCount.increment(1);
+  return kernel.self();
+}
+
+// ── Pure oracles (0 verifier keys — spike S3) ────────────────────────────────
+
+// The frozen domain tag, exposed so TS can assert its constant never drifts.
+export circuit payloadDomainTag(): Bytes<32> {
+  return domainTag();
+}
+
+// Assemble the 176-byte MIDNIGHT_ACCOUNT_V1 message from typed fields — the
+// contract's own statement of the payload encoding, byte for byte.
+export circuit computePayload(
+  op: Bytes<1>,
+  token: Bytes<32>,
+  account: Bytes<32>,
+  fromAddr: Bytes<20>,
+  to: Bytes<32>,
+  nonce: Uint<64>,
+  amount: Uint<128>
+): Bytes<176> {
+  // Casts to Bytes<32> are little-endian; the spec is big-endian.
+  const nonceBe: Bytes<8> = slice<8>(reverseBytes32(nonce as Bytes<32>), 24);
+  const amountBe: Bytes<16> = slice<16>(reverseBytes32(amount as Bytes<32>), 16);
+  return disclose(slice<176>([
+    ...domainTag(), ...op, ...token, ...account, ...fromAddr, ...to,
+    ...nonceBe, ...amountBe, ...pad(3, "")
+  ], 0) as Bytes<176>);
+}
+
+// The EIP-191 digest of a payload — what personal_sign signs, what the token
+// root recomputes, and what `validate` consumes.
+export circuit computeDigest(payload: Bytes<176>): Bytes<32> {
+  const preimage: Bytes<205> = slice<205>([...eip191Prefix(), ...payload], 0) as Bytes<205>;
+  return disclose(keccak256<Bytes<205>>(preimage));
+}
+
+// Owner identity, derived exactly as the token root derives it in-circuit.
+export circuit signerAddress(pk: Secp256k1Point): Bytes<20> {
+  return disclose(secp256k1EthereumAddress(pk));
+}

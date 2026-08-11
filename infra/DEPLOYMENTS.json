@@ -441,6 +441,42 @@
       "note": "PLAN-01 G1.3 event read-back fixture",
       "stack": "midnight-aa-36080",
       "deployedAt": "2026-08-11T20:22:08.012Z"
+    },
+    {
+      "name": "Account",
+      "contractAddress": "605b5b9dbe881b134156531defa9deaf11abf67fc857861b1478233f423f4602",
+      "txHash": "274fff05913d48a1ad51d5052ef12bf3ec658db33b6c6e55c0caa3ba960949aa",
+      "txId": "00d7f98aaab13c4bf86d329312c66798eb21625fb25372fdf419c518776f53d762",
+      "note": "PLAN-03 Account #1 (G3.3–G3.6)",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T21:06:38.795Z"
+    },
+    {
+      "name": "Account",
+      "contractAddress": "27e9581f0bf63acee777ae248efd313128c4ea409f405c4e949377bf6217ddea",
+      "txHash": "3f711d80ba530893c3b03b659bf53dae9086f1fd8e4a9f154c325e43f317b6c9",
+      "txId": "0030adc438e0bc905955612716ad4ef18beeb5aaeb24b546fcd025988dfbb16104",
+      "note": "PLAN-03 Account #2 (G3.5 cross-account)",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T21:07:02.822Z"
+    },
+    {
+      "name": "MiniTokenAA",
+      "contractAddress": "1a64bed95a8639ca61b0290edec6568ad812aa31ba9b4fc5983dd584e3f19831",
+      "txHash": "f9097be97df7709bfa3d6b2223f97a73acd047eb20cbd82638a1d9e0f6274c48",
+      "txId": "007e919f8dddda1bec4c43410a5381766ebcf3f23963fcfe8a78a8832c5cc60a92",
+      "note": "PLAN-03 token A (harness root)",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T21:08:20.292Z"
+    },
+    {
+      "name": "MiniTokenAA",
+      "contractAddress": "7d09da3c1d3fe6776b0a0964c2592b0f9f7ec89f5d1facd2b1b2e96909ef62a3",
+      "txHash": "740cab733e5fa025a3a6049754a2f4379c71b690503d3b7f592ef02bd3d3e6dd",
+      "txId": "007777d4a9fbbc0eb038380ee073815dd530523b6ae0fb1df75dd5413700312ad6",
+      "note": "PLAN-03 token B (G3.6 second token)",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T21:09:38.954Z"
     }
   ]
 }

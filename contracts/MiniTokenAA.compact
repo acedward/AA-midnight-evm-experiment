@@ -1,0 +1,141 @@
+// MiniTokenAA.compact — PLAN-03's token-root HARNESS (not PLAN-04's token).
+//
+// The minimal token-shaped CCC root that exercises the REAL frozen payload
+// (contracts/PAYLOAD.md) against the real Account contract, so gates G3.2–G3.6
+// can go green before the OZ fork exists. PLAN-04's TokenAA ports the
+// `accountTransfer` check chain below VERBATIM in front of OZ's `_update`;
+// only the balance bookkeeping here is a stand-in.
+//
+// Design rules made code (PLAN-00 §4, each traces to a source-level verdict):
+//   1. ALL crypto in the root — the CCC boundary is bytes-only (S1b RED:
+//      secp types across the boundary crash the zkir backend).
+//   2. The account handle is a circuit ARGUMENT; the account ADDRESS is never
+//      one. The address the balances key on is the one `validate` returned
+//      from kernel.self() inside the account's own proof, asserted against
+//      the SIGNED payload's account field (bytes 65..97) — the handle⇄intent
+//      binding a handle-vs-address comparison cannot provide.
+//   3. Authorize FIRST, hop SECOND, write LAST. Every assert aborts the whole
+//      transaction atomically — a rejected call leaves no write on the callee
+//      (S1 step 2 proved this live).
+//
+// Balances use OZ FungibleToken's key shape, Either<ZswapCoinPublicKey,
+// ContractAddress>: accounts on the right arm (keyed by the RETURNED address),
+// plain identities (padded eth addrs / OZ accountIds) on the left arm.
+//
+// V1 scope: op 0x01 TRANSFER only; recipients land on the LEFT arm.
+// Contract-typed recipients (right arm) are deferred with the op-selector
+// high-bit tag reserved in PAYLOAD.md.
+
+pragma language_version >= 0.25.0;
+
+import CompactStandardLibrary;
+
+// The Account interface — managed/Account (exact case) pins its verifier key
+// into this contract's expectedVk at compile time (PLAN-00 §4 rule 4).
+contract Account {
+  circuit validate(signer: Bytes<20>, digest: Bytes<32>): ContractAddress;
+}
+
+// ── Ledger ───────────────────────────────────────────────────────────────────
+
+export ledger balances: Map<Either<ZswapCoinPublicKey, ContractAddress>, Uint<128>>;
+export ledger txCount: Counter;
+
+constructor() {}
+
+// ── Frozen constants (contracts/PAYLOAD.md — MUST match Account.compact) ────
+
+// keccak256("MIDNIGHT_ACCOUNT_V1" ‖ uint256_be(2400))
+circuit domainTag(): Bytes<32> {
+  return Bytes[0x6d, 0x70, 0x90, 0x3b, 0x12, 0xa9, 0x88, 0x0d,
+               0x4e, 0x1e, 0x03, 0x84, 0x45, 0x92, 0x9b, 0x28,
+               0x6a, 0x97, 0x86, 0xf3, 0x45, 0x1a, 0x8a, 0x43,
+               0x59, 0x1b, 0xe9, 0x82, 0x1f, 0x18, 0x10, 0xfb];
+}
+
+// "\x19Ethereum Signed Message:\n176"
+circuit eip191Prefix(): Bytes<29> {
+  return Bytes[0x19, 0x45, 0x74, 0x68, 0x65, 0x72, 0x65, 0x75,
+               0x6d, 0x20, 0x53, 0x69, 0x67, 0x6e, 0x65, 0x64,
+               0x20, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65,
+               0x3a, 0x0a, 0x31, 0x37, 0x36];
+}
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
+// Big-endian 16 bytes -> Uint<128> (PART-E's proven shape).
+circuit beBytesToUint128(b: Bytes<16>): Uint<128> {
+  return (((((((((((((((b[0] as Uint<128>) * 256 + b[1] as Uint<128>) * 256
+    + b[2] as Uint<128>) * 256 + b[3] as Uint<128>) * 256
+    + b[4] as Uint<128>) * 256 + b[5] as Uint<128>) * 256
+    + b[6] as Uint<128>) * 256 + b[7] as Uint<128>) * 256
+    + b[8] as Uint<128>) * 256 + b[9] as Uint<128>) * 256
+    + b[10] as Uint<128>) * 256 + b[11] as Uint<128>) * 256
+    + b[12] as Uint<128>) * 256 + b[13] as Uint<128>) * 256
+    + b[14] as Uint<128>) * 256 + b[15] as Uint<128>;
+}
+
+// Map lookups on an absent key abort — every read is member-guarded.
+circuit balanceOrZero(key: Either<ZswapCoinPublicKey, ContractAddress>): Uint<128> {
+  return balances.member(key) ? balances.lookup(key) : 0 as Uint<128>;
+}
+
+// ── Circuits ─────────────────────────────────────────────────────────────────
+
+// Dev/test mint straight onto an account's right-arm balance. Deliberately
+// permissionless: this harness token exists to exercise the AA path, and a
+// permissionless entry point is also what R13 (deposit independence) needs.
+export circuit mint(accountAddr: Bytes<32>, amount: Uint<128>): [] {
+  const key = right<ZswapCoinPublicKey, ContractAddress>(
+    ContractAddress { bytes: disclose(accountAddr) });
+  balances.insert(key, (balanceOrZero(key) + disclose(amount)) as Uint<128>);
+}
+
+// The AA adapter — PLAN-04 §4's `accountTransfer`, over the frozen payload.
+//
+// Check order (cheap structural checks first, crypto second, hop third,
+// writes last; each error string is a rejection-matrix anchor):
+//   1. reserved bytes zero          4. token binding (kernel.self())
+//   2. domain tag (chain+version)   5. EIP-191 digest + ECDSA verify
+//   3. op selector                  6. from binding (address derivation)
+//   7. CCC validate (owner bind + digest burn, inside the account's proof)
+//   8. account binding — returned address == SIGNED payload.account
+//   9. balance movement, keyed by the RETURNED address
+export circuit accountTransfer(
+  account: Account,
+  payload: Bytes<176>,
+  sig: Secp256k1EcdsaSignature,
+  pk: Secp256k1Point
+): ContractAddress {
+  // Local constraint first: a CCC-only circuit gets no ZK artifacts.
+  txCount.increment(1);
+
+  const p = disclose(payload);
+  assert(slice<3>(p, 173) == pad(3, ""), "MiniTokenAA: nonzero reserved bytes");
+  assert(slice<32>(p, 0) == domainTag(), "MiniTokenAA: wrong domain tag");
+  assert(p[32] == 1, "MiniTokenAA: wrong op selector");
+  const self = kernel.self();
+  assert(slice<32>(p, 33) == self.bytes, "MiniTokenAA: wrong token");
+
+  const preimage: Bytes<205> = slice<205>([...eip191Prefix(), ...p], 0) as Bytes<205>;
+  const digest: Bytes<32> = keccak256<Bytes<205>>(preimage);
+  assert(secp256k1EcdsaVerify(digest, sig, pk), "MiniTokenAA: signature does not verify");
+  const fromAddr: Bytes<20> = slice<20>(p, 97);
+  assert(secp256k1EthereumAddress(pk) == fromAddr, "MiniTokenAA: signer is not from");
+
+  // The hop. Bytes-only in; the account's self-attested address back out.
+  const validated: ContractAddress = disclose(account).validate(fromAddr, digest);
+  assert(validated.bytes == slice<32>(p, 65), "MiniTokenAA: account mismatch");
+
+  const amount: Uint<128> = beBytesToUint128(slice<16>(p, 157));
+  const debit = right<ZswapCoinPublicKey, ContractAddress>(validated);
+  const fromBalance = balanceOrZero(debit);
+  assert(fromBalance >= amount, "MiniTokenAA: insufficient balance");
+  balances.insert(debit, (fromBalance - amount) as Uint<128>);
+
+  const credit = left<ZswapCoinPublicKey, ContractAddress>(
+    ZswapCoinPublicKey { bytes: slice<32>(p, 117) });
+  balances.insert(credit, (balanceOrZero(credit) + amount) as Uint<128>);
+
+  return validated;
+}
