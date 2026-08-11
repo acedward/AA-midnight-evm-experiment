@@ -96,6 +96,238 @@
       "millis": 29353,
       "stack": "midnight-aa-36080",
       "measuredAt": "2026-08-11T18:36:20.199Z"
+    },
+    {
+      "contract": "S1MinRoot",
+      "circuit": "hop",
+      "note": "S1 step 1 — minimal zkir-v3 CCC hop",
+      "millis": 23989,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T19:07:09.107Z"
+    },
+    {
+      "contract": "S1MinRoot",
+      "circuit": "hop",
+      "note": "S1 step 1 — second hop (state accumulation)",
+      "millis": 17351,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T19:07:26.473Z"
+    },
+    {
+      "contract": "S1CryptoRoot",
+      "circuit": "authorizedHop",
+      "note": "S1 step 2 — keccak + secp256k1 verify + eth-address + CCC hop",
+      "millis": 29351,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T19:12:01.807Z"
+    },
+    {
+      "contract": "S1CryptoRoot",
+      "circuit": "authorizedHop",
+      "note": "S1 step 2 — flipped-s twin (R2 malleability)",
+      "millis": 23955,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T19:12:25.842Z"
+    },
+    {
+      "contract": "S1SelfRoot",
+      "circuit": "accountCredit",
+      "note": "S1 step 3 — verify + CCC validate + credit kernel.self()",
+      "millis": 29367,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T19:17:31.919Z"
+    },
+    {
+      "contract": "S1SelfCallee",
+      "circuit": "validate",
+      "note": "S1 step 3 — R14 griefing: direct validate burns the digest",
+      "millis": 18469,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T19:17:50.627Z"
+    },
+    {
+      "contract": "S1SelfRoot",
+      "circuit": "accountCredit",
+      "note": "S1 step 3 — R14 recovery: re-signed operation lands",
+      "millis": 23928,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T19:18:14.635Z"
+    },
+    {
+      "contract": "S3PureBudget",
+      "circuit": "storeVerified",
+      "note": "S3 — provable call on a contract carrying 8 pure circuits",
+      "millis": 29359,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T19:24:02.284Z"
+    },
+    {
+      "contract": "S4Root",
+      "circuit": "hop",
+      "note": "S4 act A — hop against account v1",
+      "millis": 17317,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T19:30:38.059Z"
+    },
+    {
+      "contract": "S4Root",
+      "circuit": "hop",
+      "note": "S4 act A — hop against account v1",
+      "millis": 17333,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T19:37:13.814Z"
+    },
+    {
+      "contract": "S4Root",
+      "circuit": "hop",
+      "note": "S4 act A — hop against account v1",
+      "millis": 17332,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T19:42:07.890Z"
+    },
+    {
+      "contract": "S4Root",
+      "circuit": "hop",
+      "note": "S4 — hop after the account was rotated to v2",
+      "millis": 19190,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T19:45:27.071Z"
+    },
+    {
+      "contract": "S4Root",
+      "circuit": "hop",
+      "note": "S4 act A — hop against account v1",
+      "millis": 17325,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T19:47:01.942Z"
+    },
+    {
+      "contract": "S4Root",
+      "circuit": "hop",
+      "note": "S4 act A — hop against account v1",
+      "millis": 17334,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T19:50:31.796Z"
+    },
+    {
+      "contract": "S4Root",
+      "circuit": "hop",
+      "note": "S4 act E — hop after rotating the account to v2",
+      "millis": 17174,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T19:51:31.936Z"
+    },
+    {
+      "contract": "prove-verify-secp256k1",
+      "circuit": "verifyAndStore",
+      "note": "G1.2 Wycheproof tcId 346 (k*G has a large x-coordinate)",
+      "millis": 23971,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T20:05:44.567Z"
+    },
+    {
+      "contract": "prove-ethereum-address-secp256k1",
+      "circuit": "storeEthereumAddress",
+      "note": "G1.2 eth-address KAT seed=cow",
+      "millis": 23987,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T20:06:37.961Z"
+    },
+    {
+      "contract": "prove-ethereum-address-secp256k1",
+      "circuit": "storeEthereumAddress",
+      "note": "G1.2 eth-address KAT seed=horse",
+      "millis": 24025,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T20:07:01.991Z"
+    },
+    {
+      "contract": "prove-recover-address-secp256k1",
+      "circuit": "recoverAddr",
+      "note": "G1.2 recover + eth-address derivation",
+      "millis": 35992,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T20:08:20.745Z"
+    },
+    {
+      "contract": "S1MinRoot",
+      "circuit": "hop",
+      "note": "S1 step 1 — minimal zkir-v3 CCC hop",
+      "millis": 17304,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T20:10:02.287Z"
+    },
+    {
+      "contract": "S1MinRoot",
+      "circuit": "hop",
+      "note": "S1 step 1 — second hop (state accumulation)",
+      "millis": 18506,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T20:10:20.803Z"
+    },
+    {
+      "contract": "S1CryptoRoot",
+      "circuit": "authorizedHop",
+      "note": "S1 step 2 — keccak + secp256k1 verify + eth-address + CCC hop",
+      "millis": 29332,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T20:12:02.462Z"
+    },
+    {
+      "contract": "S1CryptoRoot",
+      "circuit": "authorizedHop",
+      "note": "S1 step 2 — flipped-s twin (R2 malleability)",
+      "millis": 23972,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T20:12:26.519Z"
+    },
+    {
+      "contract": "S1SelfRoot",
+      "circuit": "accountCredit",
+      "note": "S1 step 3 — verify + CCC validate + credit kernel.self()",
+      "millis": 23997,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T20:14:08.042Z"
+    },
+    {
+      "contract": "S1SelfCallee",
+      "circuit": "validate",
+      "note": "S1 step 3 — R14 griefing: direct validate burns the digest",
+      "millis": 18471,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T20:14:26.740Z"
+    },
+    {
+      "contract": "S1SelfRoot",
+      "circuit": "accountCredit",
+      "note": "S1 step 3 — R14 recovery: re-signed operation lands",
+      "millis": 23990,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T20:14:50.799Z"
+    },
+    {
+      "contract": "S4Root",
+      "circuit": "hop",
+      "note": "S4 act A — hop against account v1",
+      "millis": 17316,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T20:16:20.349Z"
+    },
+    {
+      "contract": "S4Root",
+      "circuit": "hop",
+      "note": "S4 act E — hop after rotating the account to v2",
+      "millis": 18542,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T20:17:20.519Z"
+    },
+    {
+      "contract": "S3PureBudget",
+      "circuit": "storeVerified",
+      "note": "S3 — provable call on a contract carrying 8 pure circuits",
+      "millis": 30696,
+      "stack": "midnight-aa-36080",
+      "measuredAt": "2026-08-11T20:21:09.104Z"
     }
   ]
 }

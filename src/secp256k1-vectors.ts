@@ -82,6 +82,7 @@ interface WycheproofTest {
   msg: string;
   sig: string;
   result: "valid" | "invalid";
+  flags?: string[];
 }
 
 interface WycheproofGroup {
@@ -150,6 +151,136 @@ export function largeXCoordinateVector(): VerifyVector {
     }
   }
   throw new Error(`no "${LARGE_X_COMMENT}" vector in the Wycheproof corpus`);
+}
+
+// ── the whole Wycheproof corpus, for the R15 driven subset ─────────────────
+
+export interface WycheproofCase {
+  tcId: number;
+  comment: string;
+  flags: readonly string[];
+  /** SHA-256 of the message — what ECDSA actually signs. */
+  e: Uint8Array;
+  /** The scalars, when the DER encoding parses strictly; undefined when it does not. */
+  sig: EcdsaScalars | undefined;
+  pk: AffinePoint;
+  /** Wycheproof's verdict: a conforming verifier must agree. */
+  expectedValid: boolean;
+}
+
+/**
+ * Strict DER parse of an ECDSA `SEQUENCE { INTEGER r, INTEGER s }`.
+ *
+ * Returns undefined rather than throwing on anything non-canonical: long-form
+ * lengths, non-minimal integers, trailing bytes, negative values. Those cases
+ * stay in the corpus but out of the driven subset, and deliberately so — the
+ * in-circuit verifier takes `(r, s)` scalars and never sees DER, so an encoding
+ * defect is a fact about the transport, not about the verifier under test.
+ * Drawing that line explicitly is the point; silently dropping them is not.
+ */
+function parseDerStrict(hex: string): EcdsaScalars | undefined {
+  const b = hexToBytes(hex);
+  if (b.length < 8 || b[0] !== 0x30) return undefined;
+  const seqLen = b[1]!;
+  if (seqLen > 0x7f || seqLen !== b.length - 2) return undefined;
+
+  let at = 2;
+  const readInt = (): bigint | undefined => {
+    if (b[at] !== 0x02) return undefined;
+    // Truncated header: `b[at + 1]` is undefined past the end, and every
+    // comparison against it silently succeeds, so check the bound first.
+    if (at + 2 > b.length) return undefined;
+    const len = b[at + 1]!;
+    if (len === 0 || len > 0x7f || at + 2 + len > b.length) return undefined;
+    const bytes = b.subarray(at + 2, at + 2 + len);
+    if (bytes[0]! & 0x80) return undefined; // negative
+    if (bytes[0] === 0x00 && len > 1 && !(bytes[1]! & 0x80)) return undefined; // non-minimal
+    at += 2 + len;
+    return BigInt(`0x${bytesToHex(bytes)}`);
+  };
+
+  const r = readInt();
+  if (r === undefined) return undefined;
+  const s = readInt();
+  if (s === undefined || at !== b.length) return undefined;
+  return { r, s };
+}
+
+/** Every Wycheproof secp256k1/SHA-256 case, DER-parsed where the encoding is canonical. */
+export function loadWycheproofCases(): WycheproofCase[] {
+  const root = JSON.parse(
+    fs.readFileSync(path.join(VECTORS_DIR, "ecdsa_secp256k1_sha256_bitcoin_test.json"), "utf-8"),
+  ) as { testGroups: WycheproofGroup[] };
+
+  return root.testGroups.flatMap((group) => {
+    const pk: AffinePoint = {
+      x: BigInt(`0x${group.publicKey.wx.replace(/^0x/, "")}`),
+      y: BigInt(`0x${group.publicKey.wy.replace(/^0x/, "")}`),
+      identity: false,
+    };
+    return group.tests.map((test) => ({
+      tcId: test.tcId,
+      comment: test.comment,
+      flags: test.flags ?? [],
+      e: sha256(hexToBytes(test.msg)),
+      sig: parseDerStrict(test.sig),
+      pk,
+      expectedValid: test.result === "valid",
+    }));
+  });
+}
+
+// ── signing helpers: build a vector instead of reading one ─────────────────
+
+/** secp256k1 group order — the modulus s is reduced against. */
+export const SECP256K1_N = secp256k1.Point.Fn.ORDER;
+
+export interface SignedDigest {
+  /** The fixed-width preimage that was hashed. */
+  payload: Uint8Array;
+  /** keccak256(payload), big-endian — what the circuit recomputes and verifies against. */
+  digest: Uint8Array;
+  sig: EcdsaScalars;
+  pk: AffinePoint;
+  /** The signer's Ethereum address, `0x` + 40 hex. */
+  ethAddr: string;
+  privHex: string;
+}
+
+/**
+ * Sign `keccak256(payload)` with `privHex` — the crypto shape PLAN-04's adapter
+ * runs in-circuit (keccak digest → ECDSA verify → address derivation), reduced
+ * to what a spike needs. `prehash: false` because the digest IS the message: the
+ * circuit hashes the payload itself and verifies over that, so signing must not
+ * hash a second time.
+ *
+ * NOT the payload spec. PLAN-03 freezes `MIDNIGHT_ACCOUNT_V1` (EIP-191 framing,
+ * domain tag, op selector, nonce); here `payload` is an opaque blob.
+ */
+export function signKeccakPayload(privHex: string, payload: Uint8Array): SignedDigest {
+  const privateKey = hexToBytes(privHex);
+  const digest = keccak_256(payload);
+  const signature = secp256k1.Signature.fromBytes(
+    secp256k1.sign(digest, privateKey, { prehash: false }),
+  );
+  return {
+    payload,
+    digest,
+    sig: { r: signature.r, s: signature.s },
+    pk: pubkeyPoint(privHex),
+    ethAddr: `0x${bytesToHex(keccak_256(secp256k1.getPublicKey(privateKey, false).slice(1)).slice(12))}`,
+    privHex,
+  };
+}
+
+/**
+ * The malleable twin `(r, n−s)` of a signature. `secp256k1EcdsaVerify` has no
+ * low-s check, so this verifies too — which is precisely why PLAN-00 §3.3
+ * replay-protects on the DIGEST and never on signature bytes. Rejection-matrix
+ * case R2 exists to keep that fact from silently changing.
+ */
+export function flipS(sig: EcdsaScalars): EcdsaScalars {
+  return { r: sig.r, s: SECP256K1_N - sig.s };
 }
 
 // ── recovery: a signature plus its R point ─────────────────────────────────

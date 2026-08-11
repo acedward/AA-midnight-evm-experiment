@@ -1,0 +1,29 @@
+// PLAN-02 spike S4 — the token-side root that binds to the account.
+//
+// Stands in for PLAN-04's token: it is deployed ONCE, against the v1 account,
+// and must keep working after the account's verifier key is rotated to v2
+// without being redeployed itself. That is the whole question S4 asks.
+
+pragma language_version >= 0.25.0;
+
+import CompactStandardLibrary;
+
+contract S4Account {
+  circuit validate(digest: Bytes<32>): ContractAddress;
+}
+
+export ledger account: S4Account;
+export ledger lastValidated: ContractAddress;
+export ledger hopCount: Counter;
+
+constructor(account_: S4Account) {
+  account = disclose(account_);
+  lastValidated = default<ContractAddress>;
+}
+
+export circuit hop(digest: Bytes<32>): ContractAddress {
+  const validated: ContractAddress = account.validate(disclose(digest));
+  lastValidated = validated;
+  hopCount.increment(1);
+  return validated;
+}

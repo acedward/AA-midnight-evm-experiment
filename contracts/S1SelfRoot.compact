@@ -1,0 +1,67 @@
+// PLAN-02 spike S1, step 3 — the token root, in miniature.
+//
+// The whole account-as-validator shape (PLAN-00 §4) in one circuit: verify an
+// EVM signature over a keccak digest, derive the signer's Ethereum address
+// in-circuit, cross-call the account to bind signer→owner and burn the digest,
+// and then move a balance keyed on THE ADDRESS THE ACCOUNT RETURNED.
+//
+// The balance key is the point. This root cannot compare the returned
+// ContractAddress against the `S1SelfCallee` reference it holds — Compact
+// relates handles and addresses in neither direction — so it simply uses what
+// came back. That is safe precisely because the value was produced by
+// `kernel.self()` inside the callee's own proof: a contract cannot lie about its
+// own address. The test asserts off-chain that the key equals the deployed
+// account's address, which is the check the circuit structurally cannot make.
+//
+// Balances key on `Either<ZswapCoinPublicKey, ContractAddress>` because that is
+// OpenZeppelin's FungibleToken shape (PLAN-00 §3.4) and PLAN-04 inherits it —
+// an account lands on the right arm, an EVM owner address on the left arm
+// zero-padded to 32. Only the right arm is exercised here.
+
+pragma language_version >= 0.25.0;
+
+import CompactStandardLibrary;
+
+contract S1SelfCallee {
+  circuit validate(signer: Bytes<20>, digest: Bytes<32>): ContractAddress;
+}
+
+export ledger account: S1SelfCallee;
+export ledger balances: Map<Either<ZswapCoinPublicKey, ContractAddress>, Uint<64>>;
+// The address `validate` returned on the last call — what the test compares
+// against the account's real deployed address.
+export ledger lastValidated: ContractAddress;
+export ledger hopCount: Counter;
+
+constructor(account_: S1SelfCallee) {
+  account = disclose(account_);
+  lastValidated = default<ContractAddress>;
+}
+
+// Authorize, hop, then write — the order PLAN-04's adapter uses. Every assert
+// aborts the entire transaction, the callee's digest write included.
+export circuit accountCredit(
+  payload: Bytes<32>,
+  sig: Secp256k1EcdsaSignature,
+  pk: Secp256k1Point,
+  amount: Uint<64>
+): ContractAddress {
+  const digest: Bytes<32> = disclose(keccak256<Bytes<32>>(payload));
+  assert(secp256k1EcdsaVerify(digest, sig, pk), "accountCredit: signature does not verify");
+  const signer: Bytes<20> = disclose(secp256k1EthereumAddress(pk));
+
+  // The cross-contract call. Bytes-only in (design rule 2); a ContractAddress
+  // back out — the one crossing this boundary that no fixture covers.
+  const validated: ContractAddress = account.validate(signer, digest);
+
+  // Keyed on what came back, never on an argument.
+  const key = right<ZswapCoinPublicKey, ContractAddress>(validated);
+  // Map lookups on an absent key abort, so every read is member-guarded
+  // (PLAN-00 §7).
+  const current: Uint<64> = balances.member(key) ? balances.lookup(key) : 0 as Uint<64>;
+  balances.insert(key, (current + disclose(amount)) as Uint<64>);
+
+  lastValidated = validated;
+  hopCount.increment(1);
+  return validated;
+}

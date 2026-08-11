@@ -1,0 +1,63 @@
+// PLAN-02 spike S1, step 2 — the CCC root, now carrying the crypto load.
+//
+// Step 1 showed a zkir-v3 circuit can make a cross-contract call. Step 2 asks
+// the question that actually matters for PLAN-04's token adapter: can it do that
+// while ALSO running the heavy secp256k1/keccak work in the same circuit? Both
+// halves are individually proven on this lane — usdcx's shape (keccak256 digest
+// → secp256k1EcdsaVerify → secp256k1EthereumAddress) is PLAN-01 G1.2, the hop is
+// S1 step 1 — and nothing combines them anywhere.
+//
+// Deliberately the same callee as step 1 (`S1MinCallee`), so the only variable
+// between the two steps is the crypto in the root. The boundary stays
+// Bytes<32>-only (PLAN-00 §4 rule 2): the digest crosses, the signature and the
+// public key never do. Passing secp types across the boundary is spike S1b.
+//
+// This is NOT the payload spec. `payload` here is an opaque fixed-width blob;
+// EIP-191 framing, the domain tag, the op selector and the nonce are PLAN-03's
+// `MIDNIGHT_ACCOUNT_V1` and are byte-frozen there. What step 2 proves is only
+// that the circuit shape survives compilation and proving.
+
+pragma language_version >= 0.25.0;
+
+import CompactStandardLibrary;
+
+contract S1MinCallee {
+  circuit note(tag: Bytes<32>): Bytes<32>;
+}
+
+export ledger callee: S1MinCallee;
+// The digest the last authorized hop carried across the boundary.
+export ledger lastDigest: Bytes<32>;
+// The Ethereum address derived in-circuit from the public key that signed it.
+export ledger lastSigner: Bytes<20>;
+export ledger hopCount: Counter;
+
+constructor(callee_: S1MinCallee) {
+  callee = disclose(callee_);
+  lastDigest = default<Bytes<32>>;
+  lastSigner = default<Bytes<20>>;
+}
+
+// keccak256 → ECDSA verify → Ethereum-address derivation → cross-contract call,
+// all inside one proof.
+//
+// The order is the order PLAN-04's adapter will use: authorize FIRST, hop
+// SECOND, write LAST. A failed assert aborts the whole transaction, so the
+// callee's write can never commit for a signature that did not verify.
+export circuit authorizedHop(
+  payload: Bytes<32>,
+  sig: Secp256k1EcdsaSignature,
+  pk: Secp256k1Point
+): Bytes<20> {
+  const digest: Bytes<32> = disclose(keccak256<Bytes<32>>(payload));
+  assert(secp256k1EcdsaVerify(digest, sig, pk), "authorizedHop: signature does not verify");
+  const signer: Bytes<20> = disclose(secp256k1EthereumAddress(pk));
+
+  const echoed = callee.note(digest);
+  assert(echoed == digest, "authorizedHop: callee must echo the digest");
+
+  lastDigest = digest;
+  lastSigner = signer;
+  hopCount.increment(1);
+  return signer;
+}

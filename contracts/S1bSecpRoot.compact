@@ -1,0 +1,48 @@
+// PLAN-02 spike S1b — the root that forwards secp types to its callee.
+// DOES NOT COMPILE, on purpose — kept as evidence. See
+// src/test/s1b-secp-boundary.test.ts.
+//
+// The root still computes the digest (keccak over the payload) but does NOT
+// verify: it hands the signature and public key across the boundary and lets the
+// account decide. If this proves, the account is self-sufficient and PLAN-03 §3's
+// trust-the-root caveat is removable.
+
+pragma language_version >= 0.25.0;
+
+import CompactStandardLibrary;
+
+contract S1bSecpCallee {
+  circuit validateSigned(
+    digest: Bytes<32>,
+    sig: Secp256k1EcdsaSignature,
+    pk: Secp256k1Point
+  ): ContractAddress;
+}
+
+export ledger account: S1bSecpCallee;
+export ledger lastValidated: ContractAddress;
+export ledger hopCount: Counter;
+
+constructor(account_: S1bSecpCallee) {
+  account = disclose(account_);
+  lastValidated = default<ContractAddress>;
+}
+
+export circuit forwardSigned(
+  payload: Bytes<32>,
+  sig: Secp256k1EcdsaSignature,
+  pk: Secp256k1Point
+): ContractAddress {
+  const digest: Bytes<32> = disclose(keccak256<Bytes<32>>(payload));
+  // Passing a witness value across the contract boundary is a disclosure, and
+  // the compiler makes you say so — including for secp types, which is the first
+  // sign that the desugared transientCommit treats them like any other value.
+  const validated: ContractAddress = account.validateSigned(
+    digest,
+    disclose(sig),
+    disclose(pk)
+  );
+  lastValidated = validated;
+  hopCount.increment(1);
+  return validated;
+}

@@ -3,8 +3,15 @@
 EVM-signature account abstraction on Midnight 2.x. Implementation repo for the
 plan set at `/Users/edwardalvarado/todo/AA/plans/` (start at `PLAN-00-MACRO.md`).
 
-This repo currently contains **PLAN-01 — infrastructure & toolchain**. PLAN-02
-onward add spikes, the Account contract, the token, and the relayer.
+This repo contains **PLAN-01 — infrastructure & toolchain** and **PLAN-02 — de-risk
+spikes & test strategy**. PLAN-03 onward add the Account contract, the token, and
+the relayer.
+
+PLAN-02's headline: **S1 is GO** — one `--feature-zkir-v3` circuit can carry
+keccak + secp256k1 ECDSA verification *and* make a cross-contract call, and a
+`ContractAddress` returned from the callee's `kernel.self()` survives the return
+boundary, which is what the account-as-validator architecture rests on. Each
+spike has a write-up in `spikes/`; read `spikes/S1-RESULTS.md` first.
 
 ## The stack is persistent. Do not tear it down.
 
@@ -67,8 +74,18 @@ as the `contract` interface the caller declares (case-sensitive).
 | `infra/` | compose file, lifecycle scripts, generated `STACK.env`, `DEPLOYMENTS.json`, `TIMINGS.json` |
 | `contracts/` | `.compact` sources; `managed/` holds compiled artifacts (gitignored) |
 | `src/` | provider assembly, wallet, compile pipeline, registries |
-| `src/test/` | the PLAN-01 verification gates |
+| `src/test/` | the verification gates for both plans |
+| `spikes/` | PLAN-02 spike write-ups (S1, S1b, S2, S3, S4) — verdicts, evidence, carry-forward |
+| `src/rejection-matrix.ts` | PLAN-02's rejection matrix as verified data, not a table |
+| `src/maintenance.ts` | verifier-key rotation (the SDK's own helpers do not work on this lane) |
 | `versions.json` | the machine-readable pin matrix |
 
 Files under `src/` vendored from `compact-end-2-end` carry a header naming the
 upstream revision and every local change.
+
+Two spike contracts — `contracts/S1bSecpRoot.compact` and
+`contracts/S1bPointRoot.compact` — **do not compile, deliberately**. They are the
+evidence that no secp256k1 type can cross a cross-contract boundary, and
+`src/test/s1b-secp-boundary.test.ts` asserts the exact backend panic, so a future
+compiler that fixes it makes that suite go red. They are kept out of
+`src/contracts.ts` so `pnpm compile` stays green.

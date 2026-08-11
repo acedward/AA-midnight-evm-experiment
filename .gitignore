@@ -16,3 +16,6 @@ contracts/managed/
 midnight-level-db-*/
 *.local.json
 .DS_Store
+
+# PLAN-02 S4 republishes post-rotation bundles here (see s4-upgrade-2).
+contracts/managed-s4-postrotation/

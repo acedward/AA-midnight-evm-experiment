@@ -1,0 +1,119 @@
+// PLAN-02 spike S3 — do exported PURE circuits count against the verifier-key
+// deploy budget?
+//
+// The ≤7-exported-circuit limit (PLAN-00 §7) is a deploy-transaction block-size
+// limit on the verifier keys a contract ships. PLAN-03 wants a family of
+// exported "digest oracle" circuits — pure functions the TS payload builder can
+// call through `pureCircuits` to prove its own encoding matches the contract's,
+// byte for byte. Those are worth nothing if each one burns a slot in a budget of
+// seven.
+//
+// A pure circuit is not a keyword: it is an exported circuit that touches no
+// ledger state, which compactc computes off-chain in the JS runtime. The claim
+// under test is that such a circuit emits NO verifier key and therefore costs
+// nothing at deploy time.
+//
+// This contract is deliberately over budget on paper: 10 exported circuits, of
+// which 8 are pure. If the claim holds, only 2 verifier keys are emitted and the
+// contract deploys. If it does not, either compilation trips our own budget
+// guard or the deploy transaction is rejected — and PLAN-03 has to ration its
+// oracles.
+//
+// The pure circuits are the ones PLAN-03 actually wants, not filler: each is a
+// piece of the payload/identity encoding a TS builder must reproduce exactly.
+
+pragma language_version >= 0.25.0;
+
+import CompactStandardLibrary;
+
+export ledger lastDigest: Bytes<32>;
+export ledger callCount: Counter;
+
+constructor() {
+  lastDigest = default<Bytes<32>>;
+}
+
+// Little-endian (Compact's `as Bytes<32>` cast) -> big-endian (Ethereum).
+// NOT a stdlib circuit on compactc 0.33.0-rc.2 despite the name appearing in
+// PLAN-02's encoding-drift notes: every contract that needs it defines it, as
+// `prove-recover-address-secp256k1.compact` does. Unexported, so it is also a
+// check that a helper circuit emits no verifier key of its own.
+circuit reverseBytes32(b: Bytes<32>): Bytes<32> {
+  return Bytes[b[31], b[30], b[29], b[28], b[27], b[26], b[25], b[24],
+               b[23], b[22], b[21], b[20], b[19], b[18], b[17], b[16],
+               b[15], b[14], b[13], b[12], b[11], b[10], b[9],  b[8],
+               b[7],  b[6],  b[5],  b[4],  b[3],  b[2],  b[1],  b[0]];
+}
+
+// ── provable (2 verifier keys expected) ────────────────────────────────────
+
+export circuit store(value: Bytes<32>): Bytes<32> {
+  const digest: Bytes<32> = keccak256<Bytes<32>>(value);
+  lastDigest = disclose(digest);
+  callCount.increment(1);
+  return disclose(digest);
+}
+
+export circuit storeVerified(
+  value: Bytes<32>,
+  sig: Secp256k1EcdsaSignature,
+  pk: Secp256k1Point
+): Bytes<20> {
+  const digest: Bytes<32> = disclose(keccak256<Bytes<32>>(value));
+  assert(secp256k1EcdsaVerify(digest, sig, pk), "storeVerified: signature does not verify");
+  lastDigest = digest;
+  callCount.increment(1);
+  return disclose(secp256k1EthereumAddress(pk));
+}
+
+// ── pure oracles (0 verifier keys expected) ────────────────────────────────
+
+// The digest a TS payload builder must reproduce.
+export circuit digestOf(value: Bytes<32>): Bytes<32> {
+  return disclose(keccak256<Bytes<32>>(value));
+}
+
+// Same, over the wider preimage a framed payload occupies.
+export circuit digestOf64(value: Bytes<64>): Bytes<32> {
+  return disclose(keccak256<Bytes<64>>(value));
+}
+
+export circuit digestOf128(value: Bytes<128>): Bytes<32> {
+  return disclose(keccak256<Bytes<128>>(value));
+}
+
+// Owner identity, derived the way the gate derives it.
+export circuit addressOf(pk: Secp256k1Point): Bytes<20> {
+  return disclose(secp256k1EthereumAddress(pk));
+}
+
+// The verifier itself, callable off-chain — the fast loop for the rejection
+// matrix's layer 1.
+export circuit verifyOf(
+  digest: Bytes<32>,
+  sig: Secp256k1EcdsaSignature,
+  pk: Secp256k1Point
+): Boolean {
+  return disclose(secp256k1EcdsaVerify(digest, sig, pk));
+}
+
+// The endianness trap, exposed so a test can prove which way round it goes:
+// a cast to Bytes<32> is little-endian, Ethereum is big-endian.
+export circuit reverse32(value: Bytes<32>): Bytes<32> {
+  return disclose(reverseBytes32(value));
+}
+
+// An Ethereum address on the left arm of OZ's balance key, zero-padded to 32.
+export circuit padAddress(addr: Bytes<20>): Bytes<32> {
+  const padded: Bytes<32> = Bytes[
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    addr[0],  addr[1],  addr[2],  addr[3],  addr[4],  addr[5],  addr[6],
+    addr[7],  addr[8],  addr[9],  addr[10], addr[11], addr[12], addr[13],
+    addr[14], addr[15], addr[16], addr[17], addr[18], addr[19]];
+  return disclose(padded);
+}
+
+// Public-key coordinates, big-endian, as the address derivation sees them.
+export circuit pointXBigEndian(pk: Secp256k1Point): Bytes<32> {
+  return disclose(reverseBytes32(secp256k1PointX(pk) as Bytes<32>));
+}

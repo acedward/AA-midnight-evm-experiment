@@ -1,0 +1,42 @@
+// PLAN-02 spike S1b (optional) — secp256k1 types across the CCC boundary.
+//
+// PLAN-00 §4 design rule 2 keeps the cross-contract boundary Bytes-only and all
+// ECDSA work in the token root, because passing `Secp256k1Point` /
+// `Secp256k1EcdsaSignature` as callee arguments is the one zkir interaction with
+// zero coverage anywhere: a CCC argument is desugared into a `transientCommit`,
+// and nobody has committed over secp atoms.
+//
+// The rule costs something. With bytes-only, the account cannot re-verify the
+// signature itself — it trusts the root to have done it, which is the caveat in
+// PLAN-03 §3. If secp types cross cleanly, that caveat can be removed: the
+// account verifies for itself and the token's honesty stops mattering.
+//
+// So this callee is the Account's `validate` with the crypto moved INSIDE it.
+
+pragma language_version >= 0.25.0;
+
+import CompactStandardLibrary;
+
+export ledger owner: Bytes<20>;
+export ledger consumedDigests: Set<Bytes<32>>;
+export ledger validateCount: Counter;
+
+constructor(owner_: Bytes<20>) {
+  owner = disclose(owner_);
+}
+
+// Verify the signature HERE, in the callee, over arguments that crossed the
+// contract boundary as secp256k1 types.
+export circuit validateSigned(
+  digest: Bytes<32>,
+  sig: Secp256k1EcdsaSignature,
+  pk: Secp256k1Point
+): ContractAddress {
+  const d = disclose(digest);
+  assert(secp256k1EcdsaVerify(d, sig, pk), "validateSigned: signature does not verify");
+  assert(disclose(secp256k1EthereumAddress(pk)) == owner, "validateSigned: signer is not the owner");
+  assert(!consumedDigests.member(d), "validateSigned: digest already consumed");
+  consumedDigests.insert(d);
+  validateCount.increment(1);
+  return kernel.self();
+}

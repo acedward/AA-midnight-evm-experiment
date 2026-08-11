@@ -1,0 +1,44 @@
+// PLAN-02 spike S1, step 1 — the CCC root.
+//
+// The architecture gate in its smallest form: a `--feature-zkir-v3` circuit that
+// makes one cross-contract call. If step 1 fails it fails in zkir-v3 lowering or
+// at the proof server, and PLAN-00's account-as-validator architecture waits for
+// upstream (the in-token contingency seam, PLAN-03 §2, is unaffected).
+//
+// The callee's managed directory MUST be named exactly `S1MinCallee` — the same
+// name as the `contract` interface declared below, case-sensitive, sibling to
+// this contract's managed dir. That name is what pins the callee's verifier key
+// into this contract's expectedVk, and getting it wrong is a Linux-only failure
+// (macOS's case-insensitive FS hides it).
+
+pragma language_version >= 0.25.0;
+
+import CompactStandardLibrary;
+
+contract S1MinCallee {
+  circuit note(tag: Bytes<32>): Bytes<32>;
+}
+
+// The callee reference lives in the ledger so the binding the hop dispatches
+// through is inspectable from outside the circuit.
+export ledger callee: S1MinCallee;
+// What the callee handed back, committed by the root.
+export ledger lastEcho: Bytes<32>;
+export ledger hopCount: Counter;
+
+constructor(callee_: S1MinCallee) {
+  callee = disclose(callee_);
+  lastEcho = default<Bytes<32>>;
+}
+
+// One hop, one in-circuit assertion. The assert is the test: the value the root
+// receives across the contract boundary is the value it sent, checked inside the
+// proof rather than by the test process afterwards.
+export circuit hop(tag: Bytes<32>): Bytes<32> {
+  const sent = disclose(tag);
+  const echoed = callee.note(sent);
+  assert(echoed == sent, "hop: callee must echo the tag it was given");
+  lastEcho = echoed;
+  hopCount.increment(1);
+  return echoed;
+}

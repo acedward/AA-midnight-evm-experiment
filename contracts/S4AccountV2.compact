@@ -1,0 +1,40 @@
+// PLAN-02 spike S4, version 2 — the upgraded account.
+//
+// S4 asks whether an Account contract can be UPGRADED after deployment. The
+// account-as-validator design claims "auth policy in exactly one place", and
+// that claim is undercut if changing `Account.compact` means redeploying every
+// token that binds to it: a new build means new verifier keys, and a deployed
+// contract's entry points are pinned to the keys it was deployed with.
+//
+// MIP-0003's escape hatch — untested here until now — is that a deployed
+// contract's verifier keys can be ROTATED by its maintenance authority. If that
+// works, an account upgrade is a bundle release plus N rotations instead of a
+// token redeploy.
+//
+// v1 and v2 are byte-for-byte identical except for one added constraint in
+// `validate`, and they compile to the SAME managed directory (`S4Account`).
+// The interface and the ledger layout are identical, which is what makes them
+// rotation-compatible: rotation swaps the proof circuit, never the state.
+
+pragma language_version >= 0.25.0;
+
+import CompactStandardLibrary;
+
+export ledger lastDigest: Bytes<32>;
+export ledger validateCount: Counter;
+
+constructor() {
+  lastDigest = default<Bytes<32>>;
+}
+
+export circuit validate(digest: Bytes<32>): ContractAddress {
+  const d = disclose(digest);
+  // THE UPGRADE: one added constraint, which is enough to change the circuit
+  // and therefore the verifier key. Same signature, same ledger layout — only
+  // the proof circuit differs, which is exactly the shape of a real policy
+  // change (a tightened auth rule) and exactly what rotation has to carry.
+  assert(d != default<Bytes<32>>, "validate: digest must be non-zero");
+  lastDigest = d;
+  validateCount.increment(1);
+  return kernel.self();
+}

@@ -1,0 +1,56 @@
+// PLAN-02 spike S1, step 3 — the account-as-validator callee, in miniature.
+//
+// This is PLAN-00 §4's Account contract reduced to the three properties step 3
+// exists to test on chain:
+//
+//   1. `validate` RETURNS `kernel.self()`. Design rule 1: a contract handle and a
+//      ContractAddress cannot be related in Compact — no cast, no serialize — so
+//      the token can never be handed the account's address as a separate
+//      argument and trust it. The address the token keys balances on has to be
+//      the one the account itself returned, from inside the proof. Whether a
+//      ContractAddress survives the CCC return boundary at all is untested.
+//   2. The callee writes its OWN ledger — a digest set — inside the root's
+//      transaction, and that write commits or reverts atomically with it.
+//   3. Replay protection keys on the DIGEST, never on signature bytes and never
+//      on a monotonic nonce alone (PLAN-00 §3.3). `secp256k1EcdsaVerify` has no
+//      low-s check, so (r, s) and (r, n−s) are both valid for the same digest;
+//      the digest is what stays stable across that.
+//
+// No `kernel.caller()` exists on this lane and there are no CCC-only circuits,
+// so `validate` is a public entry point that ANYONE can call with an observed
+// (signer, digest) pair. That is design rule 3's accepted, documented risk: the
+// worst an attacker achieves is burning a digest the owner already signed,
+// denying one operation, which re-signing recovers. Step 3 demonstrates that
+// containment rather than asserting it.
+//
+// Not the real Account: no auth nonce, no op selector, no owner rotation. Those
+// are PLAN-03, behind the frozen payload spec.
+
+pragma language_version >= 0.25.0;
+
+import CompactStandardLibrary;
+
+// The Ethereum key that controls this account.
+export ledger owner: Bytes<20>;
+// Every digest this account has already authorized. A Set, not a counter: see
+// the malleability note above.
+export ledger consumedDigests: Set<Bytes<32>>;
+export ledger validateCount: Counter;
+
+constructor(owner_: Bytes<20>) {
+  owner = disclose(owner_);
+}
+
+// Bind signer→owner, consume the digest, and hand back this contract's own
+// address. The caller (the token root) has already verified the signature that
+// produced `digest`; this contract's job is the identity binding and the
+// single-use guarantee.
+export circuit validate(signer: Bytes<20>, digest: Bytes<32>): ContractAddress {
+  const who = disclose(signer);
+  const d = disclose(digest);
+  assert(who == owner, "validate: signer is not the account owner");
+  assert(!consumedDigests.member(d), "validate: digest already consumed");
+  consumedDigests.insert(d);
+  validateCount.increment(1);
+  return kernel.self();
+}

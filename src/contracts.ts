@@ -28,6 +28,38 @@ export const CONTRACTS: readonly ContractSource[] = [
     managedName: "prove-recover-address-secp256k1",
   },
 
+  // PLAN-02 spike S1 — the architecture gate: zkir-v3 crypto AND a cross-contract
+  // call in one circuit. Three steps, each its own contract pair so every step
+  // stays independently reproducible. Callees FIRST in each pair.
+  { source: "S1MinCallee.compact", managedName: "S1MinCallee" },
+  { source: "S1MinRoot.compact", managedName: "S1MinRoot" },
+  // Step 2 reuses the step-1 callee, so the crypto in the root is the only
+  // variable between the two steps.
+  { source: "S1CryptoRoot.compact", managedName: "S1CryptoRoot" },
+  // Step 3: the account-as-validator shape itself — a callee that returns
+  // kernel.self() and burns digests, a root that keys balances on what came back.
+  { source: "S1SelfCallee.compact", managedName: "S1SelfCallee" },
+  { source: "S1SelfRoot.compact", managedName: "S1SelfRoot" },
+
+  // PLAN-02 spike S1b — secp types ACROSS the CCC boundary. NOT in the build:
+  // the callers (`S1bSecpRoot.compact`, `S1bPointRoot.compact`) do not compile,
+  // by design. They are kept as executable evidence for PLAN-00 §4 design rule 2
+  // and are driven by src/test/s1b-secp-boundary.test.ts, which asserts the
+  // exact backend panic — so the day a compiler release fixes it, that test goes
+  // red and the bytes-only rule can be revisited.
+
+  // PLAN-02 spike S3 — 10 exported circuits, 8 of them pure. Compiles only if
+  // pure circuits emit no verifier key (the budget guard counts .verifier files).
+  { source: "S3PureBudget.compact", managedName: "S3PureBudget" },
+
+  // PLAN-02 spike S4 — the account upgrade path. V1 and V2 are the SAME contract
+  // one constraint apart and compile to the SAME managed dir (`S4Account`), so
+  // the spike can swap the local bundle under a deployed contract and try to
+  // rotate its verifier key. The manifest lists v1: a full `pnpm compile` leaves
+  // the tree in the v1 state, and the S4 suite compiles v2 over it on demand.
+  { source: "S4AccountV1.compact", managedName: "S4Account" },
+  { source: "S4Root.compact", managedName: "S4Root" },
+
   // PLAN-03 adds: { source: "Account.compact", managedName: "Account" }   <- CCC callee,
   //   the managed dir name MUST stay "Account" because PLAN-04's token declares
   //   `contract Account { ... }`.

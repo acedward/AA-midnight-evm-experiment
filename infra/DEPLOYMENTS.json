@@ -162,6 +162,285 @@
       "note": "PLAN-01 G1.3 event read-back fixture",
       "stack": "midnight-aa-36080",
       "deployedAt": "2026-08-11T18:39:26.039Z"
+    },
+    {
+      "name": "S1MinCallee",
+      "contractAddress": "fb4f6cf722a4025513bbfc660ff5b0af1f8f4e646d31c04ca0f27974531535c2",
+      "txHash": "958fafd47dc0d88a69fdfb4817f9a3b02d0bdd321b36a4b203f9d2bd0239849c",
+      "txId": "00ae7323accd4f84b498c2e7067f9c7b705b3ad96499b0a79b125899a54df8e416",
+      "note": "PLAN-02 S1 step 1 CCC callee",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T19:06:21.065Z"
+    },
+    {
+      "name": "S1MinRoot",
+      "contractAddress": "ceb9269baad2818e767b819e75ea48733e1acc601c1a2f5eababfeb0db6f9e5d",
+      "txHash": "1669af68c6966b5d78a0737a8d8108e8230cc9a4eaa9cd786c25b9d1066aa651",
+      "txId": "005aac8fc0b52d94f8ccf7758be9de07625547d89ce43b3a1f4c150b7ae261a192",
+      "note": "PLAN-02 S1 step 1 CCC root",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T19:06:45.106Z"
+    },
+    {
+      "name": "S1MinCallee",
+      "contractAddress": "49f4a5f66ba464a8d227b1545ca9aa36a7c98324d85058546b1949fa88947cd9",
+      "txHash": "5d05d4a50765f8ba683842a4c313b5e99b0c1915408c1f780e7c040d256edee2",
+      "txId": "000edd80bcede98488b6134271eea59cf5be36a6a900f643826f9decc05505f0a7",
+      "note": "PLAN-02 S1 step 2 CCC callee",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T19:10:56.398Z"
+    },
+    {
+      "name": "S1CryptoRoot",
+      "contractAddress": "b67d824a2e91553b737480e42a137f887abb80a99738d931e57dc1564e5ee89d",
+      "txHash": "aaaefc1a230ffc2c9046aae4cf73c22c61298420c3aa45d03769479e14498fc3",
+      "txId": "00fe5bf789608c09b12d36eaf8ae08139b1c77a147bbf51a8fbd62e3cc08426012",
+      "note": "PLAN-02 S1 step 2 crypto root",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T19:11:32.454Z"
+    },
+    {
+      "name": "S1SelfCallee",
+      "contractAddress": "3a14b4680211d61e37367cba832dfe2ce048b673cc79ab9e5a1f96dc4a8cfbdd",
+      "txHash": "0e302a48cc4c1c09562e5948fb3f8979361aa714dec70fd45f73beb97900bb65",
+      "txId": "00e80205b62b5e64bdeff23fb0e3ae6675a91557d36cf4c2918f114cace22248ca",
+      "note": "PLAN-02 S1 step 3 account (validator callee)",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T19:16:26.506Z"
+    },
+    {
+      "name": "S1SelfRoot",
+      "contractAddress": "ecbbc2796e53581d9f1bf11a4039934b34ed961d7cd9269b8c7c9862d03fa2ca",
+      "txHash": "d95546eac7de898c1d8e7c0d3adb864a1e3ed779796debfaa05d0f2859283408",
+      "txId": "00b90bc426ed76e2a398e1f05d9f7badca2e1392a58517b94f4292f9f4f6477a44",
+      "note": "PLAN-02 S1 step 3 token root",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T19:17:02.540Z"
+    },
+    {
+      "name": "S3PureBudget",
+      "contractAddress": "0c4ab1ae60fa382d0033fd60ecb9449584426c6732ab048d97acff52b2232b58",
+      "txHash": "d47f7c48b5c1aeef6d2cd5ac8703d295b91d472f1a06bde899a73a8c21af627e",
+      "txId": "00c0f956a677c850221683c403218d39812b64ad2cc36c26aa5bc0d61f2102c055",
+      "note": "PLAN-02 S3 — 10 exported circuits (8 pure), 2 verifier keys",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T19:23:32.922Z"
+    },
+    {
+      "name": "S4Account",
+      "contractAddress": "235788784ec27f9508ac01b001609e8492edac328078127f84cb4c456981e6b2",
+      "txHash": "cdd42ad4ba220bc29f9c2bb5c82411fc628bc9f7fa785f3ad15d82cf3f741b4d",
+      "txId": "0017fe28c1b3cf8f42e0c58e817d9c365f71211f8e72eea5376264dcc90e6f296e",
+      "note": "PLAN-02 S4 — account v1 (verifier key rotated to v2 in this suite)",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T19:29:56.682Z"
+    },
+    {
+      "name": "S4Root",
+      "contractAddress": "5abe3f37bed154408bc31610dc926bd7a3e19735690584021e77593d4b063eb8",
+      "txHash": "81f7020cb4d753fe2d29413040cd838312237f2aab6569c748c2eabc1b72ab0e",
+      "txId": "00abedb1b0de88b5066957b0953d52bd8f2f14e072cb4a4ed19cad30c42816251a",
+      "note": "PLAN-02 S4 — token-side root, deployed ONCE against account v1",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T19:30:20.731Z"
+    },
+    {
+      "name": "S4Account",
+      "contractAddress": "9b0a88e3ff03b5e2c718bfb579879ca8286aa0d13de378067160231d9caa1309",
+      "txHash": "c32a6358cbe934016f6927ac7b59eaeea44eaab5d6b3d5a8d3a5bd86bdcda33a",
+      "txId": "00a852812876bb83a44f270bbacab49d0a6a27a5ecbe9cbff7feb51f581bb8d0a8",
+      "note": "PLAN-02 S4 — account v1 (verifier key rotated to v2 in this suite)",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T19:36:39.130Z"
+    },
+    {
+      "name": "S4Root",
+      "contractAddress": "d7efdd4e9a5fe41982a98a6f4f1bf98d94b338e136830a5b46ee8deeb768f1d1",
+      "txHash": "f08fb46631f584fd0951f388595d40a7f01fab4d1db57e137dd079d399393124",
+      "txId": "000c36eef01a69e86986664481e03c707b2d43e0a038626830f2758ddfd8072ec7",
+      "note": "PLAN-02 S4 — token-side root, deployed ONCE against account v1",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T19:36:56.472Z"
+    },
+    {
+      "name": "S4Account",
+      "contractAddress": "ec7bc8999529243123b986a81fe398cd2a4d531cb2362f8fdf084e24d8d04c0f",
+      "txHash": "2870b26dbf4ccbbbe95f3eae4a0758b75eac4a82d98d1a52ff3841f313b82794",
+      "txId": "009c779ee52d6bbe1f9242f191c7fad4cb052c42ff760bdd5be11cad0980bf014a",
+      "note": "PLAN-02 S4 — account v1 (verifier key rotated to v2 in this suite)",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T19:41:31.846Z"
+    },
+    {
+      "name": "S4Root",
+      "contractAddress": "4a52fb7ea5bfa7570d0c1aa8e02cd8f8873879de72dc9613ad675555de4c3417",
+      "txHash": "330c969ade0e03789efda55d2914a6d3598c256ee9ff81e532aacb8940986524",
+      "txId": "00b8e33c7b2c35788d210a265641282e34008882910986f476d0ffd432e748725b",
+      "note": "PLAN-02 S4 — token-side root, deployed ONCE against account v1",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T19:41:50.552Z"
+    },
+    {
+      "name": "S4Account",
+      "contractAddress": "671bb3d18b5777106c8343add1c3d6b92f10cddc3fee443dfd9de19d8ba7ef4a",
+      "txHash": "a07a28a5ef3fd51149c23b8e12b88ac4a82ad06af39e1b69c70f9a8a7797760f",
+      "txId": "005a83bd0b482c6b752ff283979fb0c6d0ea7009573415187e10ab2493df812e82",
+      "note": "PLAN-02 S4 — account v1 (verifier key rotated to v2 in this suite)",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T19:46:25.906Z"
+    },
+    {
+      "name": "S4Root",
+      "contractAddress": "161a1b972af7a5e66b56dd02a73121131e24d125431c4c7f769e543099dbc6da",
+      "txHash": "21a39b807a6717656f043d3a0e9e4294ddf7497d29b5d31fdeceef69a38c8eaf",
+      "txId": "0083ad4d6cd3b757707d8af6d7c4cc03a4e52f9989dfcad9b4f85f77286ad2ff24",
+      "note": "PLAN-02 S4 — token-side root, deployed ONCE against account v1",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T19:46:44.609Z"
+    },
+    {
+      "name": "S4Account",
+      "contractAddress": "c9ad6403fba6222ef508d6682bbee37a63c449bdfed18d3e75915df68c373ed6",
+      "txHash": "2f644d3bc53210fe48846dd58e76c25de217d1398ee4af50a027e0b326be014b",
+      "txId": "0009f8dd50c36cf81d991ddb99b346465c753078cb9edf96608f9b30c120fc0423",
+      "note": "PLAN-02 S4 — account v1, verifier key rotated to v2 by this suite",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T19:49:57.087Z"
+    },
+    {
+      "name": "S4Root",
+      "contractAddress": "e186e9402908d43659b29064555556024ab6657065be76f12c1f85edad8af3c2",
+      "txHash": "9ac72d2458deda7b1aab41273f94ae79ee81a843ab7d7ed8269e4535adcf17a3",
+      "txId": "00e340c3a89fa1c444e070f33d34265485d9f59b54df8ba77c061becea0816ae5e",
+      "note": "PLAN-02 S4 — token-side root, deployed ONCE against account v1",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T19:50:14.452Z"
+    },
+    {
+      "name": "prove-verify-secp256k1",
+      "contractAddress": "b5efe43c2875ba3a8e2b26c0121873985f024fefb7399c23aca62ac5c923484d",
+      "txHash": "9576b152a3f37fa21f9fc3475ad86837ac2483d1a11950336a1143bbda7a34f5",
+      "txId": "009f8e24b4bcaa8f87287b90dc9f3797db24de801348380b40edf040bfbf4dc4ea",
+      "note": "PLAN-01 G1.2 secp256k1 prove-case",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T20:05:20.595Z"
+    },
+    {
+      "name": "prove-ethereum-address-secp256k1",
+      "contractAddress": "5018d54c4db737f529d0150d6fa4b41528f4d098e0062069eeab185d342f8910",
+      "txHash": "ca14c109cfedbc945062dd3484b29039dba432e95ea668b803bfa60b34d2236d",
+      "txId": "00e5315f3eee30956ab9f0f418c0c8b08682fea33d04e47b9274baac38878c911d",
+      "note": "PLAN-01 G1.2 secp256k1 prove-case",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T20:06:13.974Z"
+    },
+    {
+      "name": "prove-recover-address-secp256k1",
+      "contractAddress": "2501b489216d2939165c7255220cdec8f4a39a4c2f16a731d4078eb4c28ed4a5",
+      "txHash": "6ad384e86322f33999f98a054bbb85973f379ee79005d1300df5987e679b1f6f",
+      "txId": "009deb10517af7eb71622bcd06788a3303b6f676d80bd29e4024c9e3bc92c57bc9",
+      "note": "PLAN-01 G1.2 secp256k1 prove-case",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T20:07:44.752Z"
+    },
+    {
+      "name": "S1MinCallee",
+      "contractAddress": "a9772fd25e72d73bdfed308fd3c6d232690110b0bf215b5be41fd1097441e994",
+      "txHash": "dd7fbeea0a228da4160060cb2ef7b6a5409327dbe919c8ea09d1319816cc75b4",
+      "txId": "003b25404a1628e8faccd94f09e311ec1a0aa9f1ba87706a96669ee99e0efcec73",
+      "note": "PLAN-02 S1 step 1 CCC callee",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T20:09:20.928Z"
+    },
+    {
+      "name": "S1MinRoot",
+      "contractAddress": "ae7fa04f918cb63ad186fdf35a608fa392a7696620720ff57191e975b3a474ce",
+      "txHash": "4c9a84c865e9d14c01d67cb34f9ee1583d67aa79156f125043e727873ca3eb3a",
+      "txId": "00ac85c7223e9d703bbf660c24137f4e7183656e9f580e78b2a9dbb113c1e4cea5",
+      "note": "PLAN-02 S1 step 1 CCC root",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T20:09:44.970Z"
+    },
+    {
+      "name": "S1MinCallee",
+      "contractAddress": "7cc82b22d2db24dad1b415e9454f5c6f26ca02c364a52196ced7e01350ec15d1",
+      "txHash": "5f6a84644313ac2b2d1022bc5e51177db1ffd660681a50be88bc6a92050bd434",
+      "txId": "00c88d7daecd2f4bd8f271af1699c177c755b13f3648775fcf699b9f22400c0705",
+      "note": "PLAN-02 S1 step 2 CCC callee",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T20:10:57.062Z"
+    },
+    {
+      "name": "S1CryptoRoot",
+      "contractAddress": "9dd209d90c304c30a70dd2e09acc958569862e8ead05f5ac95f67a3b417d0abe",
+      "txHash": "f1a6db6acd4f1f3044cd6a7e8ffb1409708bb8937a28f203aca50c9ab1706205",
+      "txId": "00b887adfe44dcd56114ac93a85c20ba12501cacfc2541762e1de7802f56720eb1",
+      "note": "PLAN-02 S1 step 2 crypto root",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T20:11:33.129Z"
+    },
+    {
+      "name": "S1SelfCallee",
+      "contractAddress": "e9805bf97972e63681f4c6398394d9b4ea752234a61a0463253e8f295e40a79b",
+      "txHash": "19c95b1e416cc722cccf96ff22f58c9a6ada8cea7f9b5d9f0fa76c8df228b175",
+      "txId": "006b114d5c6045ec72986c5d2f912af0a70f90343048a2d48411ed41c349a3e3b5",
+      "note": "PLAN-02 S1 step 3 account (validator callee)",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T20:13:07.977Z"
+    },
+    {
+      "name": "S1SelfRoot",
+      "contractAddress": "63f499dc680a22a4def5309b05c0625d4c3e263446708e037b9fb76bf01c4405",
+      "txHash": "d89c647f96ae34a4dcdf7195dafb029b32ccca4b911f193c08b9a86bf03a5e39",
+      "txId": "00d97f1f656e5880b6962b167430e3d9ab72e360571ed4f765318b806aedf6c09c",
+      "note": "PLAN-02 S1 step 3 token root",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T20:13:44.040Z"
+    },
+    {
+      "name": "S4Account",
+      "contractAddress": "6dcbb3667aaef4d12a7991479a6d5c59047ebdfc00badcbc3c260035760b21b8",
+      "txHash": "251f90c6670477c711cbaaf4c13a7cfc6afa491784e027837aa240965f208a1b",
+      "txId": "0019b2a869ff6b8537f26b62f3e8029f90c3638e0fcfcbd6f87b6440c7eecde3df",
+      "note": "PLAN-02 S4 — account v1, verifier key rotated to v2 by this suite",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T20:15:44.313Z"
+    },
+    {
+      "name": "S4Root",
+      "contractAddress": "4e36b89a1b1ca9411c3b747b0d8ebeb1d7e5ce1f676814e84c388d923d057fc0",
+      "txHash": "9c73741490bb66e14e4159b253f727b213069fa35439168f9eccb138c03903b2",
+      "txId": "0082a8d2f110162a639ae741c39bf84ab25262eb24943b71a4b45748298a624541",
+      "note": "PLAN-02 S4 — token-side root, deployed ONCE against account v1",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T20:16:03.027Z"
+    },
+    {
+      "name": "KeccakFixture",
+      "contractAddress": "21ac5838662ec7b4b50fbcc48b85e868832dc0a391fc994e53f56f380bba8500",
+      "txHash": "60d0ca32ca20b102c96f6a071133c68a5b2a9c2ca06a623661be7bbd158336ee",
+      "txId": "00cef2754a4e351ac8fbd5647975cca2926284b9384fe45727a0954835f19e96bf",
+      "note": "PLAN-01 G1.1 keccak toolchain canary",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T20:18:26.078Z"
+    },
+    {
+      "name": "S3PureBudget",
+      "contractAddress": "c8b798ce2037be7d1279e1ef86c3e49d36e5d219855c6f79f921f4fd2dc46146",
+      "txHash": "576fdbde6bd7504e4a93ae6cd32ed39e95ff53737414b8ae03f9420026bdb8d7",
+      "txId": "00e3a886fc904a866ed3397091ef4323747f4ea117dc3fbf4943ff5c4a4ff500f1",
+      "note": "PLAN-02 S3 — 10 exported circuits (8 pure), 2 verifier keys",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T20:20:38.402Z"
+    },
+    {
+      "name": "KeccakFixture",
+      "contractAddress": "45b4e22fd6451efb09499ed2f34119a8f417ce9ce28d96ead313fbf85e4d6e15",
+      "txHash": "fef9dd957b6e38e5b81a73540879c1ccb4bf5438e58c6a4b3a3846955a6edeb8",
+      "txId": "00a0874790ad57aad16544a970d3c662bf0777d91e714fbc8fc7fb309826ae2cbc",
+      "note": "PLAN-01 G1.3 event read-back fixture",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-11T20:22:08.012Z"
     }
   ]
 }
