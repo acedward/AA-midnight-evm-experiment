@@ -39,6 +39,13 @@ services:
       - --rpc-external
       - --rpc-cors=all
       - --rpc-methods=unsafe
+      # Archive state pruning (2026-08-11 incident, PLAN-05 §Questions): the
+      # default 256-block state pruning made the chain UNRECOVERABLE when the
+      # indexer container (whose sqlite had no volume, fixed below) was lost —
+      # a fresh indexer must replay from genesis and dies on
+      # "State already discarded" the moment block-0 state is pruned. Archive
+      # mode keeps every state so an indexer re-create can always re-index.
+      - --state-pruning=archive
     volumes:
       # BASE_PATH=/node/chain — persisted so `docker compose restart|up -d` keeps
       # the chain state that every later PLAN's DEPLOYMENTS.json addresses live in.
@@ -73,6 +80,13 @@ services:
       APP__INFRA__SECRET: "${AA_INDEXER_SECRET:?}"
       APP__APPLICATION__NETWORK_ID: "${MIDNIGHT_NETWORK_ID:?}"
       RUST_LOG: "info"
+    volumes:
+      # 2026-08-11 incident (PLAN-05 §Questions): the indexer keeps its whole
+      # view in /data (indexer.sqlite + ledger-db.sqlite), and without a volume
+      # that lived in the CONTAINER LAYER — losing the container lost the view,
+      # and with the node's then-default state pruning the chain could never be
+      # re-indexed. Persist it like node-chain.
+      - indexer-data:/data
     healthcheck:
       # The image is bash-only (no curl/wget/nc), so this is a bash /dev/tcp
       # listener probe. Real GraphQL readiness is asserted host-side by
@@ -112,3 +126,4 @@ networks:
 volumes:
   proof-params:
   node-chain:
+  indexer-data:

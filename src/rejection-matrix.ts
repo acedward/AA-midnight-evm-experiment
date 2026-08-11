@@ -141,6 +141,10 @@ export const REJECTION_MATRIX: readonly RejectionCase[] = [
       { file: S1, test: "R6 — rejects the replayed digest, and moves no balance" },
       { file: SIM_TEST, test: "R6 — a consumed digest is refused on the second call" },
       { file: LIVE_TEST, test: "R6/R2 — replay and its flipped-s twin are both refused" },
+      {
+        file: "src/test/relayer-live.test.ts",
+        test: "duplicate relay returns the prior result — no second proof, no second move",
+      },
     ],
     rationale: "Single-use is the whole point of the consumed-digest set (PLAN-00 §6.2).",
   },
@@ -151,13 +155,19 @@ export const REJECTION_MATRIX: readonly RejectionCase[] = [
       "relayer refuses out-of-order nonces; in-circuit a nonce change is a digest change (R5)",
     layers: [1, 2],
     gate: "G2.2",
-    covered: [],
-    blockedBy:
-      "PLAN-05 (relayer-side ordering). PLAN-03 DECISION (recorded in contracts/PAYLOAD.md): " +
-      "replay authority is the digest set ONLY — no ledger nonce, no in-circuit nonce assert, " +
-      "because a strictly-sequential nonce on a public `validate` adds a griefing vector " +
-      "(garbage-digest nonce bumps) the digest set doesn't have. The signed payload nonce " +
-      "provides digest uniqueness + ordering legibility; its tamper-rejection is R5.",
+    // PLAN-03 DECISION (recorded in contracts/PAYLOAD.md): replay authority is
+    // the digest set ONLY — no ledger nonce, no in-circuit nonce assert (a
+    // strictly-sequential nonce on a public `validate` adds a griefing vector
+    // the digest set doesn't have). Ordering is therefore RELAYER-side:
+    // PLAN-05's RelayerCore refuses a nonce at or below the highest accepted
+    // per (account, from), before any proving. Tamper-rejection of the signed
+    // nonce itself is R5.
+    covered: [
+      {
+        file: "src/test/relayer-live.test.ts",
+        test: "R7 — an out-of-order nonce is refused with 409, before any proving",
+      },
+    ],
     rationale:
       "A dedicated auth nonce, separate from any global counter, is what keeps " +
       "permissionless deposits from invalidating pending signatures (R13's other half).",

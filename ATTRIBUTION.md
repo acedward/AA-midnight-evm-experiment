@@ -68,7 +68,18 @@ suites under `src/test/`. `src/maintenance.ts` reimplements the update sequence 
 `ContractOperationVersion` as a parameter — see `spikes/S4-RESULTS.md` for why the SDK path
 cannot be used here.
 
-## Still to vendor (later plans)
+## PLAN-05 relayer & signer port
 
-PLAN-05 ports `RelayerCore` from `/Users/edwardalvarado/midnight-evm-compat/evm-relayer`.
-Record its commit hash here when it lands.
+Ported 2026-08-11 for PLAN-05 from `/Users/edwardalvarado/midnight-evm-compat/evm-relayer`
+@ `3703317` (working clone: `/Users/edwardalvarado/todo/AA/experiments/evm-relayer`) —
+PART-E, running live. Ports are BEHAVIORAL (rewritten against this repo's
+vendored providers/contract-ops instead of evm-relayer's own submit plumbing),
+not verbatim copies:
+
+| This repo | Upstream shape | Local changes |
+|---|---|---|
+| `src/signer.ts` | `relayer/payload.ts` (EIP-191 digest, 65-byte split, noble recovery, flipS) | retargeted at the frozen 176-byte `MIDNIGHT_ACCOUNT_V1`; generic-length EIP-191; low-s normalization added; field parsing via PAYLOAD.md offsets |
+| `src/relayer/core.ts` | `relayer/server.ts` `RelayerCore` (async queue, idempotence-per-digest, recover-and-bind before accept) | multi-token REGISTRY routed by the payload's token field; R7 nonce ordering; per-from rate limiting; no postgres tx_index (that was Part B's evm-rpc bridge); submits via this repo's `contract-ops.ts` |
+| `src/relayer/server.ts` | `relayer/server.ts` `makeHttpServer` + `relayer/serve.ts` (CORS) | `/registry` route added; raw-tx path NOT ported (no relayer-attested circuit exists on the AA call tree — PLAN-05 §Questions) |
+| `src/relayer/capture-fixture.ts` | `relayer/capture-fixture.ts` | 176-byte payload; verification through `src/signer.ts` before save |
+| `src/vectors/metamask-personal-sign-part-e.json` | `circuits/test/fixtures/metamask-personal-sign.json` | vendored verbatim (a REAL MetaMask signature — see `src/vectors/README.md`) |

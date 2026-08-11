@@ -4,9 +4,9 @@ EVM-signature account abstraction on Midnight 2.x. Implementation repo for the
 plan set at `/Users/edwardalvarado/todo/AA/plans/` (start at `PLAN-00-MACRO.md`).
 
 This repo contains **PLAN-01 — infrastructure & toolchain**, **PLAN-02 — de-risk
-spikes & test strategy**, and the completed **PLAN-04 §1–2** token fork/restore.
-PLAN-04 §3–4 still wait for PLAN-03's frozen payload and Account interface; the
-relayer remains PLAN-05.
+spikes & test strategy**, **PLAN-03 — the Account contract + frozen payload**,
+the completed **PLAN-04 §1–2** token fork/restore (§3–4 — the `accountTransfer`
+adapter — still open), and **PLAN-05 — the signer client & relayer**.
 
 PLAN-02's headline: **S1 is GO** — one `--feature-zkir-v3` circuit can carry
 keccak + secp256k1 ECDSA verification *and* make a cross-contract call, and a
@@ -109,6 +109,33 @@ Regenerate clients/proofs; the old verifier keys are not interchangeable.
 The retained `transferWithEthSig` still uses the old payload without token
 binding. This partial artifact closes only G4.1–G4.2 and is not production-safe;
 cross-token replay protection and `accountTransfer` belong to PLAN-04 §3–4.
+
+## PLAN-05: signer client & relayer
+
+`src/signer.ts` is the EVM-wallet seam: EIP-191 framing, the 65-byte `r‖s‖v`
+wire signature, off-circuit public-key recovery (noble, `prehash: false`), and
+low-s normalization (tidiness only — the circuits accept both twins and replay
+on the digest). `src/relayer/` is the PART-E `RelayerCore` ported to the AA
+call tree:
+
+```bash
+node --experimental-strip-types src/relayer/server.ts   # port AA_BASE_PORT+4
+```
+
+`POST /relay {payload, signature}` validates everything provable-off-chain
+(structure, registry routing by the payload's token field, recovery + from
+bind, R7 nonce ordering, per-from rate limit), returns the EIP-191 digest as
+the eth-style tx hash immediately, and proves+submits on an async queue —
+idempotent per digest, so the flipped-s twin and every retry return the prior
+result. The relayer's wallet (bob) is the paymaster; there is no other fee
+path. Registered tokens attach as a NON-deployer via `findDeployed`, routed
+from `infra/DEPLOYMENTS.json`.
+
+Gates: G5.1/G5.2 (`src/test/relayer-signer.test.ts`, no stack needed beyond
+the compiler) and G5.3 (`src/test/relayer-live.test.ts`, live loop over HTTP
+against the persistent stack). G5.4 captures a real MetaMask signature over
+the 176-byte payload via `src/relayer/capture-fixture.ts` (one human click);
+its suite un-skips itself once the fixture exists.
 
 Two spike contracts — `contracts/S1bSecpRoot.compact` and
 `contracts/S1bPointRoot.compact` — **do not compile, deliberately**. They are the

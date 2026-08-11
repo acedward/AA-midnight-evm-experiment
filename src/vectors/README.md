@@ -52,3 +52,28 @@ Consumed by [`../pure/ethereum-address-kat.ts`](../pure/ethereum-address-kat.ts)
 non-Ethereum encoding) to `addr`, which it does NOT match — an expected failure
 that surfaces the divergence (caught and logged so the case stays green). To
 refresh, re-download from the URL above and update the SHA-256 row.
+
+## `metamask-personal-sign-part-e.json`
+
+A REAL MetaMask `personal_sign` signature over PART-E's frozen 128-byte
+`MIDNIGHT_EVM_AUTH_V1` payload, vendored verbatim from the live evm-relayer
+project (captured there by a human click through
+`relayer/capture-fixture.ts`).
+
+| field   | value                                                                              |
+| ------- | ----------------------------------------------------------------------------------- |
+| Source  | `/Users/edwardalvarado/midnight-evm-compat/evm-relayer` `circuits/test/fixtures/metamask-personal-sign.json` |
+| Revision| `3703317` (clone: `todo/AA/experiments/evm-relayer`)                                |
+| Signer  | `0x5559080b33b673ded41b62ca23ca21b51bd8974a` (throwaway key, PART-E E-G2)           |
+
+Consumed by `src/test/relayer-signer.test.ts` (gate G5.1): it pins THIS repo's
+generic EIP-191 framing + off-circuit recovery (`src/signer.ts`) to bytes a
+real wallet produced, with no human click in the loop. The payload is PART-E's
+128-byte format, NOT `MIDNIGHT_ACCOUNT_V1` — only the mechanics are shared.
+
+## `metamask-personal-sign-account.json` (captured, not vendored)
+
+The SAME real-wallet evidence for the frozen 176-byte `MIDNIGHT_ACCOUNT_V1`
+payload — gate G5.4. Captured locally (one human click) by
+`src/relayer/capture-fixture.ts`; the G5.4 suite in
+`src/test/relayer-signer.test.ts` skips itself until this file exists.
