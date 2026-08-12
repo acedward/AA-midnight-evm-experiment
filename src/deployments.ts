@@ -30,6 +30,13 @@ export interface DeploymentRecord {
   deployedAt: string;
   /** Free-form: which gate/plan created it. */
   note?: string;
+  /**
+   * Set when the chain GENERATION that minted this address was wiped (the
+   * COMPOSE_PROJECT_NAME alone cannot tell generations apart — the 36080
+   * window was regenerated in place, PLAN-05 Q2). An archived row is history,
+   * not routing state: resolution helpers skip it.
+   */
+  archived?: string;
 }
 
 interface DeploymentsFile {
@@ -74,9 +81,9 @@ export function recordDeployment(
   return full;
 }
 
-/** Every recorded deployment of `name` on the current stack, newest last. */
+/** Every LIVE (non-archived) deployment of `name` on the current stack, newest last. */
 export function deploymentsOf(name: string, stack = currentStack()): DeploymentRecord[] {
-  return read().deployments.filter((d) => d.name === name && d.stack === stack);
+  return read().deployments.filter((d) => d.name === name && d.stack === stack && !d.archived);
 }
 
 /** The most recent address for `name` on this stack, or undefined. */

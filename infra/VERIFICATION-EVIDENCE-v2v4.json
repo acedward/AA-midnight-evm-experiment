@@ -1,0 +1,133 @@
+{
+  "suite": "V2-V4",
+  "records": [
+    {
+      "at": "2026-08-12T00:36:44.511Z",
+      "v": "V2",
+      "step": "deploy V2 demo account",
+      "contractAddress": "03de0ee9e899d9e87ff1c0ff35e6bae1858a4a8c9c071c2be34d5e336912d129",
+      "txHash": "7888bcbd057b6dd1a218ab8500fd0b6b537e4f9d014c8f625c6ece9b931c107b"
+    },
+    {
+      "at": "2026-08-12T00:37:01.860Z",
+      "v": "V2",
+      "step": "deploy V2 token A",
+      "contractAddress": "d180827e25575b0952d17229524b7a14d2916af2c1ffd657ca0f8e06882166e6",
+      "txHash": "1c99e9e368a19c36d653dcab3596947f7d76b88c3a2c0896b665583ae4de14b0"
+    },
+    {
+      "at": "2026-08-12T00:37:20.539Z",
+      "v": "V2",
+      "step": "deploy V2 token B",
+      "contractAddress": "f42385b204f2b65636e5b66d7bce0f5e98a694f7ce856182be2ef9d3c6bfea45",
+      "txHash": "b80bc9838a3052d34493d2a71dfd4714ee7e81c168aa8cc783814f8837a5c171"
+    },
+    {
+      "at": "2026-08-12T00:38:01.898Z",
+      "v": "V2",
+      "step": "mint 10000 on token A and token B to the account"
+    },
+    {
+      "at": "2026-08-12T00:41:30.882Z",
+      "v": "V2",
+      "step": "G5.4 MetaMask fixture parity re-verified",
+      "address": "0xb57ea9492b82c619e05beee99db8fd40f3d956c9"
+    },
+    {
+      "at": "2026-08-12T00:42:23.377Z",
+      "v": "V2",
+      "step": "relayed transfer token A (nonce 1, 1000)",
+      "ethTxHash": "0x55f3bacd4ae9241f2a93278c0f3835ad7b7378072cc43d53a899816848d0d64b",
+      "phase": "confirmed",
+      "midnightTxHash": "bd8a77fbb7facdec2a3a7807ed90d56843413e8d5390440cf1fcc513945484eb",
+      "midnightTxId": "00f8d0cc333121a183a06a1c4516bb83b183c449813dd70e4188b33c77c194b05f",
+      "blockHeight": 865,
+      "blockHash": "0c32a1c2425b9c70452ff159ee257157db315126b0d7ac6cf97423d2378d91b5"
+    },
+    {
+      "at": "2026-08-12T00:43:09.534Z",
+      "v": "V2",
+      "step": "relayed transfer token B (nonce 2, 2000)",
+      "ethTxHash": "0x8dc7be4aa8595bc4678e70d8ecf5aa3383f989c06d0c1b02f5a628ef44d30108",
+      "phase": "confirmed",
+      "midnightTxHash": "a17c5fcef1f0a5cec776bf7e49544e0f9b9b5aa696b73b2977ef3a5f8f145b72",
+      "midnightTxId": "00a369ed559387d1097ebc88a6fcc32da1be5f1841a1206d27d52e8ae6f94f71e0",
+      "blockHeight": 873,
+      "blockHash": "cead35de6ae5e662f4b81ff4497f8cbe086c7aef4db3e3c9c9130d7cdc5ee95b"
+    },
+    {
+      "at": "2026-08-12T00:43:09.657Z",
+      "v": "V3",
+      "step": "R6 replayed digest",
+      "rejected": "Account: digest already consumed"
+    },
+    {
+      "at": "2026-08-12T00:43:09.741Z",
+      "v": "V3",
+      "step": "R2 flipped-s twin",
+      "rejected": "Account: digest already consumed"
+    },
+    {
+      "at": "2026-08-12T00:43:09.889Z",
+      "v": "V3",
+      "step": "R4 wrong owner key",
+      "rejected": [
+        "Account: signer is not the account owner",
+        "TokenAA: signer is not from"
+      ]
+    },
+    {
+      "at": "2026-08-12T00:43:09.963Z",
+      "v": "V3",
+      "step": "R8 cross-token replay",
+      "rejected": "TokenAA: wrong token"
+    },
+    {
+      "at": "2026-08-12T00:43:26.480Z",
+      "v": "V2",
+      "step": "deploy V3 second account (cross-account replay)",
+      "contractAddress": "a58a17a56bb3f308101ad04034f3b3de2cd73ce9286d73826c09755b0adc8145",
+      "txHash": "2ac395d943f85b99b8e716028ca2606d461b6e6cadd861cb43c55c8c4db4426c"
+    },
+    {
+      "at": "2026-08-12T00:44:14.509Z",
+      "v": "V3",
+      "step": "R9 cross-account replay (rejected atomically; intended relay landed after)",
+      "rejected": "TokenAA: account mismatch",
+      "landedTxHash": "c60bb24467b503b321ff201daf4f41c956b2eda83eb1b61d42b1a9ef5c9fa4a7",
+      "landedBlock": 884
+    },
+    {
+      "at": "2026-08-12T00:44:31.858Z",
+      "v": "V4a",
+      "step": "direct validate burned the digest",
+      "txHash": "bd9065358da80f6cd257c29eb2b1d334bd77c79142cdd716c3dba2e3aea761a5"
+    },
+    {
+      "at": "2026-08-12T00:44:34.872Z",
+      "v": "V4a",
+      "step": "legit relay failed cleanly",
+      "ethTxHash": "0x506faace5127359fd4d5514bcc01d5294391fe821e548f95266db978da601896",
+      "error": "digest already consumed"
+    },
+    {
+      "at": "2026-08-12T00:45:20.829Z",
+      "v": "V4a",
+      "step": "re-signed op landed (griefer denied ONE op, not the account)",
+      "ethTxHash": "0x0054039eb5eae7eebd282924d2647a959cddef36cb0391ba66c7ace852354128",
+      "phase": "confirmed",
+      "midnightTxHash": "65cebe29547cd56496d3c25b7532e867a360835f1fca1b00363b25ebfc6ded1a",
+      "midnightTxId": "0048c21de5b964878a68fcab1a520bdcefbf739fbf3b28c3b8ab0bd13ea97328ea",
+      "blockHeight": 895,
+      "blockHash": "bd90ea8f4fbe946ab2393571a4402a6202b696b434d4f1cd07db818e6d15ddb3"
+    },
+    {
+      "at": "2026-08-12T00:47:21.870Z",
+      "v": "V4b",
+      "step": "second RelayerCore relayed the executed tuple",
+      "ethTxHash": "0x55f3bacd4ae9241f2a93278c0f3835ad7b7378072cc43d53a899816848d0d64b",
+      "secondInstanceOutcome": "failed on chain: digest already consumed (no second proof-move)",
+      "firstInstanceOutcome": "cached confirmed receipt returned"
+    }
+  ]
+}

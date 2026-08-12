@@ -1,0 +1,28 @@
+{
+  "suite": "V5",
+  "records": [
+    {
+      "at": "2026-08-12T00:59:57.874Z",
+      "v": "V5",
+      "step": "archive marking",
+      "archivedGen1Rows": 53,
+      "liveGen2Rows": 12
+    },
+    {
+      "at": "2026-08-12T01:00:00.154Z",
+      "v": "V5",
+      "step": "re-attach",
+      "reattached": 12,
+      "uniqueLiveAddresses": 12
+    },
+    {
+      "at": "2026-08-12T01:00:50.070Z",
+      "v": "V5",
+      "step": "post-restart proven transfer (V2 pair)",
+      "txHash": "cab14129e45399d8f1a08e24b7a7c4d46c5fa68843c6584c87555838396d52cd",
+      "blockHeight": 1050,
+      "account": "03de0ee9e899d9e87ff1c0ff35e6bae1858a4a8c9c071c2be34d5e336912d129",
+      "token": "d180827e25575b0952d17229524b7a14d2916af2c1ffd657ca0f8e06882166e6"
+    }
+  ]
+}

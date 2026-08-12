@@ -8,7 +8,8 @@
       "txId": "007391cde0fa073b695059af1a5b87ac6e8aa5960b6fcf574e60f1f56d3ecfce04",
       "note": "PLAN-01 G1.1 keccak toolchain canary",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T18:05:50.065Z"
+      "deployedAt": "2026-08-11T18:05:50.065Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "prove-verify-secp256k1",
@@ -17,7 +18,8 @@
       "txId": "002496ca5b8252ef8e80dc598fc44e400a909308e539c7eb6dcbe34f756749349f",
       "note": "PLAN-01 G1.2 secp256k1 prove-case",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T18:09:02.228Z"
+      "deployedAt": "2026-08-11T18:09:02.228Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "prove-recover-address-secp256k1",
@@ -26,7 +28,8 @@
       "txId": "00690899b9b459ed5f77db5a820fdaab04418be26bf5c7342b807ffe23b9d199ed",
       "note": "PLAN-01 G1.2 secp256k1 prove-case",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T18:10:14.332Z"
+      "deployedAt": "2026-08-11T18:10:14.332Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "prove-verify-secp256k1",
@@ -35,7 +38,8 @@
       "txId": "0071a780baeec716766b6c21b1444b10dfe8270881e310050abebc40cf4e697232",
       "note": "PLAN-01 G1.2 secp256k1 prove-case",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T18:14:19.975Z"
+      "deployedAt": "2026-08-11T18:14:19.975Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "prove-ethereum-address-secp256k1",
@@ -44,7 +48,8 @@
       "txId": "007ccc54b9a04bf9f02ff3ca320e96d29ca3d52eff38ad8d49ffc0736c07771934",
       "note": "PLAN-01 G1.2 secp256k1 prove-case",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T18:15:14.684Z"
+      "deployedAt": "2026-08-11T18:15:14.684Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "prove-recover-address-secp256k1",
@@ -53,7 +58,8 @@
       "txId": "008a3263487c17881282467d4ed29ad74237f7d270149b4f9f5c8a202c5cbc8266",
       "note": "PLAN-01 G1.2 secp256k1 prove-case",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T18:16:44.098Z"
+      "deployedAt": "2026-08-11T18:16:44.098Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "KeccakFixture",
@@ -62,7 +68,8 @@
       "txId": "00afe2103f30c8149fd17ff343ae9c0846bf54dfdb39da0f1af5be7e027383ba81",
       "note": "PLAN-01 G1.3 event read-back fixture",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T18:18:56.412Z"
+      "deployedAt": "2026-08-11T18:18:56.412Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "KeccakFixture",
@@ -71,7 +78,8 @@
       "txId": "00214881c20385b46d5b65aae98c3210690a3d8d7ffd3ace9d35ceecd5b3ecd661",
       "note": "PLAN-01 G1.3 event read-back fixture",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T18:21:02.046Z"
+      "deployedAt": "2026-08-11T18:21:02.046Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "prove-verify-secp256k1",
@@ -80,7 +88,8 @@
       "txId": "0050f580929d60f86418163843e7d8f8957a02258271806122052b5ee4b9b3008f",
       "note": "PLAN-01 G1.2 secp256k1 prove-case",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T18:22:32.943Z"
+      "deployedAt": "2026-08-11T18:22:32.943Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "prove-ethereum-address-secp256k1",
@@ -89,7 +98,8 @@
       "txId": "00fe7ee93a3088054fc31a17736d1c861d644f14753866901e82f7df217df57c6d",
       "note": "PLAN-01 G1.2 secp256k1 prove-case",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T18:23:26.382Z"
+      "deployedAt": "2026-08-11T18:23:26.382Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "prove-recover-address-secp256k1",
@@ -98,7 +108,8 @@
       "txId": "00c0ca084996b3f3b9b421a24fddd608b6313ac378c5906fe5dcf5e68aa9922fa5",
       "note": "PLAN-01 G1.2 secp256k1 prove-case",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T18:24:55.902Z"
+      "deployedAt": "2026-08-11T18:24:55.902Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "KeccakFixture",
@@ -107,7 +118,8 @@
       "txId": "00b60a46a72473e814befb31b160ebd46aa7df765ead069e80f0db12fa90b4afba",
       "note": "PLAN-01 G1.1 keccak toolchain canary",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T18:26:26.759Z"
+      "deployedAt": "2026-08-11T18:26:26.759Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "KeccakFixture",
@@ -116,7 +128,8 @@
       "txId": "00be4c08ac4c6c0428c649f72a60c45644f0aa4d8b9c62be274ce4065d1c832e2d",
       "note": "PLAN-01 G1.3 event read-back fixture",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T18:29:20.545Z"
+      "deployedAt": "2026-08-11T18:29:20.545Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "prove-verify-secp256k1",
@@ -125,7 +138,8 @@
       "txId": "0047f6db551bc676624752ec99b2be13267e7715991c48367555944ff87dbd2f1d",
       "note": "PLAN-01 G1.2 secp256k1 prove-case",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T18:33:26.519Z"
+      "deployedAt": "2026-08-11T18:33:26.519Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "prove-ethereum-address-secp256k1",
@@ -134,7 +148,8 @@
       "txId": "00f7121b4066c8d3b1b3e8660406f045549f620811d13e93a01dda136dde0124a2",
       "note": "PLAN-01 G1.2 secp256k1 prove-case",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T18:34:19.996Z"
+      "deployedAt": "2026-08-11T18:34:19.996Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "prove-recover-address-secp256k1",
@@ -143,7 +158,8 @@
       "txId": "00a16fe100f09b13f85dede39f23f506deb1ec754f7323fe74d19e129b0bcee228",
       "note": "PLAN-01 G1.2 secp256k1 prove-case",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T18:35:50.845Z"
+      "deployedAt": "2026-08-11T18:35:50.845Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "KeccakFixture",
@@ -152,7 +168,8 @@
       "txId": "00feac34200d1178e1a34bb824621f4b62541087a917a6430baca0dc252aeb3d60",
       "note": "PLAN-01 G1.1 keccak toolchain canary",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T18:37:20.365Z"
+      "deployedAt": "2026-08-11T18:37:20.365Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "KeccakFixture",
@@ -161,7 +178,8 @@
       "txId": "007fe2d2fdc23f40a66c625051ddd09b650e6b3d8ff186d731af1a4cd628b2d3d4",
       "note": "PLAN-01 G1.3 event read-back fixture",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T18:39:26.039Z"
+      "deployedAt": "2026-08-11T18:39:26.039Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "S1MinCallee",
@@ -170,7 +188,8 @@
       "txId": "00ae7323accd4f84b498c2e7067f9c7b705b3ad96499b0a79b125899a54df8e416",
       "note": "PLAN-02 S1 step 1 CCC callee",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T19:06:21.065Z"
+      "deployedAt": "2026-08-11T19:06:21.065Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "S1MinRoot",
@@ -179,7 +198,8 @@
       "txId": "005aac8fc0b52d94f8ccf7758be9de07625547d89ce43b3a1f4c150b7ae261a192",
       "note": "PLAN-02 S1 step 1 CCC root",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T19:06:45.106Z"
+      "deployedAt": "2026-08-11T19:06:45.106Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "S1MinCallee",
@@ -188,7 +208,8 @@
       "txId": "000edd80bcede98488b6134271eea59cf5be36a6a900f643826f9decc05505f0a7",
       "note": "PLAN-02 S1 step 2 CCC callee",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T19:10:56.398Z"
+      "deployedAt": "2026-08-11T19:10:56.398Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "S1CryptoRoot",
@@ -197,7 +218,8 @@
       "txId": "00fe5bf789608c09b12d36eaf8ae08139b1c77a147bbf51a8fbd62e3cc08426012",
       "note": "PLAN-02 S1 step 2 crypto root",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T19:11:32.454Z"
+      "deployedAt": "2026-08-11T19:11:32.454Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "S1SelfCallee",
@@ -206,7 +228,8 @@
       "txId": "00e80205b62b5e64bdeff23fb0e3ae6675a91557d36cf4c2918f114cace22248ca",
       "note": "PLAN-02 S1 step 3 account (validator callee)",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T19:16:26.506Z"
+      "deployedAt": "2026-08-11T19:16:26.506Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "S1SelfRoot",
@@ -215,7 +238,8 @@
       "txId": "00b90bc426ed76e2a398e1f05d9f7badca2e1392a58517b94f4292f9f4f6477a44",
       "note": "PLAN-02 S1 step 3 token root",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T19:17:02.540Z"
+      "deployedAt": "2026-08-11T19:17:02.540Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "S3PureBudget",
@@ -224,7 +248,8 @@
       "txId": "00c0f956a677c850221683c403218d39812b64ad2cc36c26aa5bc0d61f2102c055",
       "note": "PLAN-02 S3 — 10 exported circuits (8 pure), 2 verifier keys",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T19:23:32.922Z"
+      "deployedAt": "2026-08-11T19:23:32.922Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "S4Account",
@@ -233,7 +258,8 @@
       "txId": "0017fe28c1b3cf8f42e0c58e817d9c365f71211f8e72eea5376264dcc90e6f296e",
       "note": "PLAN-02 S4 — account v1 (verifier key rotated to v2 in this suite)",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T19:29:56.682Z"
+      "deployedAt": "2026-08-11T19:29:56.682Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "S4Root",
@@ -242,7 +268,8 @@
       "txId": "00abedb1b0de88b5066957b0953d52bd8f2f14e072cb4a4ed19cad30c42816251a",
       "note": "PLAN-02 S4 — token-side root, deployed ONCE against account v1",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T19:30:20.731Z"
+      "deployedAt": "2026-08-11T19:30:20.731Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "S4Account",
@@ -251,7 +278,8 @@
       "txId": "00a852812876bb83a44f270bbacab49d0a6a27a5ecbe9cbff7feb51f581bb8d0a8",
       "note": "PLAN-02 S4 — account v1 (verifier key rotated to v2 in this suite)",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T19:36:39.130Z"
+      "deployedAt": "2026-08-11T19:36:39.130Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "S4Root",
@@ -260,7 +288,8 @@
       "txId": "000c36eef01a69e86986664481e03c707b2d43e0a038626830f2758ddfd8072ec7",
       "note": "PLAN-02 S4 — token-side root, deployed ONCE against account v1",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T19:36:56.472Z"
+      "deployedAt": "2026-08-11T19:36:56.472Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "S4Account",
@@ -269,7 +298,8 @@
       "txId": "009c779ee52d6bbe1f9242f191c7fad4cb052c42ff760bdd5be11cad0980bf014a",
       "note": "PLAN-02 S4 — account v1 (verifier key rotated to v2 in this suite)",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T19:41:31.846Z"
+      "deployedAt": "2026-08-11T19:41:31.846Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "S4Root",
@@ -278,7 +308,8 @@
       "txId": "00b8e33c7b2c35788d210a265641282e34008882910986f476d0ffd432e748725b",
       "note": "PLAN-02 S4 — token-side root, deployed ONCE against account v1",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T19:41:50.552Z"
+      "deployedAt": "2026-08-11T19:41:50.552Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "S4Account",
@@ -287,7 +318,8 @@
       "txId": "005a83bd0b482c6b752ff283979fb0c6d0ea7009573415187e10ab2493df812e82",
       "note": "PLAN-02 S4 — account v1 (verifier key rotated to v2 in this suite)",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T19:46:25.906Z"
+      "deployedAt": "2026-08-11T19:46:25.906Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "S4Root",
@@ -296,7 +328,8 @@
       "txId": "0083ad4d6cd3b757707d8af6d7c4cc03a4e52f9989dfcad9b4f85f77286ad2ff24",
       "note": "PLAN-02 S4 — token-side root, deployed ONCE against account v1",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T19:46:44.609Z"
+      "deployedAt": "2026-08-11T19:46:44.609Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "S4Account",
@@ -305,7 +338,8 @@
       "txId": "0009f8dd50c36cf81d991ddb99b346465c753078cb9edf96608f9b30c120fc0423",
       "note": "PLAN-02 S4 — account v1, verifier key rotated to v2 by this suite",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T19:49:57.087Z"
+      "deployedAt": "2026-08-11T19:49:57.087Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "S4Root",
@@ -314,7 +348,8 @@
       "txId": "00e340c3a89fa1c444e070f33d34265485d9f59b54df8ba77c061becea0816ae5e",
       "note": "PLAN-02 S4 — token-side root, deployed ONCE against account v1",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T19:50:14.452Z"
+      "deployedAt": "2026-08-11T19:50:14.452Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "prove-verify-secp256k1",
@@ -323,7 +358,8 @@
       "txId": "009f8e24b4bcaa8f87287b90dc9f3797db24de801348380b40edf040bfbf4dc4ea",
       "note": "PLAN-01 G1.2 secp256k1 prove-case",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T20:05:20.595Z"
+      "deployedAt": "2026-08-11T20:05:20.595Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "prove-ethereum-address-secp256k1",
@@ -332,7 +368,8 @@
       "txId": "00e5315f3eee30956ab9f0f418c0c8b08682fea33d04e47b9274baac38878c911d",
       "note": "PLAN-01 G1.2 secp256k1 prove-case",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T20:06:13.974Z"
+      "deployedAt": "2026-08-11T20:06:13.974Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "prove-recover-address-secp256k1",
@@ -341,7 +378,8 @@
       "txId": "009deb10517af7eb71622bcd06788a3303b6f676d80bd29e4024c9e3bc92c57bc9",
       "note": "PLAN-01 G1.2 secp256k1 prove-case",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T20:07:44.752Z"
+      "deployedAt": "2026-08-11T20:07:44.752Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "S1MinCallee",
@@ -350,7 +388,8 @@
       "txId": "003b25404a1628e8faccd94f09e311ec1a0aa9f1ba87706a96669ee99e0efcec73",
       "note": "PLAN-02 S1 step 1 CCC callee",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T20:09:20.928Z"
+      "deployedAt": "2026-08-11T20:09:20.928Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "S1MinRoot",
@@ -359,7 +398,8 @@
       "txId": "00ac85c7223e9d703bbf660c24137f4e7183656e9f580e78b2a9dbb113c1e4cea5",
       "note": "PLAN-02 S1 step 1 CCC root",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T20:09:44.970Z"
+      "deployedAt": "2026-08-11T20:09:44.970Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "S1MinCallee",
@@ -368,7 +408,8 @@
       "txId": "00c88d7daecd2f4bd8f271af1699c177c755b13f3648775fcf699b9f22400c0705",
       "note": "PLAN-02 S1 step 2 CCC callee",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T20:10:57.062Z"
+      "deployedAt": "2026-08-11T20:10:57.062Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "S1CryptoRoot",
@@ -377,7 +418,8 @@
       "txId": "00b887adfe44dcd56114ac93a85c20ba12501cacfc2541762e1de7802f56720eb1",
       "note": "PLAN-02 S1 step 2 crypto root",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T20:11:33.129Z"
+      "deployedAt": "2026-08-11T20:11:33.129Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "S1SelfCallee",
@@ -386,7 +428,8 @@
       "txId": "006b114d5c6045ec72986c5d2f912af0a70f90343048a2d48411ed41c349a3e3b5",
       "note": "PLAN-02 S1 step 3 account (validator callee)",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T20:13:07.977Z"
+      "deployedAt": "2026-08-11T20:13:07.977Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "S1SelfRoot",
@@ -395,7 +438,8 @@
       "txId": "00d97f1f656e5880b6962b167430e3d9ab72e360571ed4f765318b806aedf6c09c",
       "note": "PLAN-02 S1 step 3 token root",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T20:13:44.040Z"
+      "deployedAt": "2026-08-11T20:13:44.040Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "S4Account",
@@ -404,7 +448,8 @@
       "txId": "0019b2a869ff6b8537f26b62f3e8029f90c3638e0fcfcbd6f87b6440c7eecde3df",
       "note": "PLAN-02 S4 — account v1, verifier key rotated to v2 by this suite",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T20:15:44.313Z"
+      "deployedAt": "2026-08-11T20:15:44.313Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "S4Root",
@@ -413,7 +458,8 @@
       "txId": "0082a8d2f110162a639ae741c39bf84ab25262eb24943b71a4b45748298a624541",
       "note": "PLAN-02 S4 — token-side root, deployed ONCE against account v1",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T20:16:03.027Z"
+      "deployedAt": "2026-08-11T20:16:03.027Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "KeccakFixture",
@@ -422,7 +468,8 @@
       "txId": "00cef2754a4e351ac8fbd5647975cca2926284b9384fe45727a0954835f19e96bf",
       "note": "PLAN-01 G1.1 keccak toolchain canary",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T20:18:26.078Z"
+      "deployedAt": "2026-08-11T20:18:26.078Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "S3PureBudget",
@@ -431,7 +478,8 @@
       "txId": "00e3a886fc904a866ed3397091ef4323747f4ea117dc3fbf4943ff5c4a4ff500f1",
       "note": "PLAN-02 S3 — 10 exported circuits (8 pure), 2 verifier keys",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T20:20:38.402Z"
+      "deployedAt": "2026-08-11T20:20:38.402Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "KeccakFixture",
@@ -440,7 +488,8 @@
       "txId": "00a0874790ad57aad16544a970d3c662bf0777d91e714fbc8fc7fb309826ae2cbc",
       "note": "PLAN-01 G1.3 event read-back fixture",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T20:22:08.012Z"
+      "deployedAt": "2026-08-11T20:22:08.012Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "Account",
@@ -449,7 +498,8 @@
       "txId": "00d7f98aaab13c4bf86d329312c66798eb21625fb25372fdf419c518776f53d762",
       "note": "PLAN-03 Account #1 (G3.3–G3.6)",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T21:06:38.795Z"
+      "deployedAt": "2026-08-11T21:06:38.795Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "Account",
@@ -458,7 +508,8 @@
       "txId": "0030adc438e0bc905955612716ad4ef18beeb5aaeb24b546fcd025988dfbb16104",
       "note": "PLAN-03 Account #2 (G3.5 cross-account)",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T21:07:02.822Z"
+      "deployedAt": "2026-08-11T21:07:02.822Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "MiniTokenAA",
@@ -467,7 +518,8 @@
       "txId": "007e919f8dddda1bec4c43410a5381766ebcf3f23963fcfe8a78a8832c5cc60a92",
       "note": "PLAN-03 token A (harness root)",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T21:08:20.292Z"
+      "deployedAt": "2026-08-11T21:08:20.292Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "MiniTokenAA",
@@ -476,7 +528,8 @@
       "txId": "007777d4a9fbbc0eb038380ee073815dd530523b6ae0fb1df75dd5413700312ad6",
       "note": "PLAN-03 token B (G3.6 second token)",
       "stack": "midnight-aa-36080",
-      "deployedAt": "2026-08-11T21:09:38.954Z"
+      "deployedAt": "2026-08-11T21:09:38.954Z",
+      "archived": "gen-1 — chain wiped & regenerated in place 2026-08-11T23:00Z (PLAN-05 Q2); address does not resolve on the gen-2 chain"
     },
     {
       "name": "Account",
@@ -549,6 +602,42 @@
       "note": "PLAN-05 G5.3 event leg (Q4 retarget)",
       "stack": "midnight-aa-36080",
       "deployedAt": "2026-08-11T23:33:38.441Z"
+    },
+    {
+      "name": "Account",
+      "contractAddress": "03de0ee9e899d9e87ff1c0ff35e6bae1858a4a8c9c071c2be34d5e336912d129",
+      "txHash": "7888bcbd057b6dd1a218ab8500fd0b6b537e4f9d014c8f625c6ece9b931c107b",
+      "txId": "0019cb32be0b36010c5b2b45b0dae20b7860d63a88fb99efc2cd6da2d65ea3cc9f",
+      "note": "V2 demo account",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-12T00:36:44.510Z"
+    },
+    {
+      "name": "TokenAA",
+      "contractAddress": "d180827e25575b0952d17229524b7a14d2916af2c1ffd657ca0f8e06882166e6",
+      "txHash": "1c99e9e368a19c36d653dcab3596947f7d76b88c3a2c0896b665583ae4de14b0",
+      "txId": "00c28c9642929cad817db83132ccd0885d52a2b5ade52a467576d72fc7df678f60",
+      "note": "V2 token A",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-12T00:37:01.860Z"
+    },
+    {
+      "name": "TokenAA",
+      "contractAddress": "f42385b204f2b65636e5b66d7bce0f5e98a694f7ce856182be2ef9d3c6bfea45",
+      "txHash": "b80bc9838a3052d34493d2a71dfd4714ee7e81c168aa8cc783814f8837a5c171",
+      "txId": "0055ab6d5d558b034d66ee1157854c6fa80bd47e32596bb6b1a24e6eb1dc0c02b4",
+      "note": "V2 token B",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-12T00:37:20.538Z"
+    },
+    {
+      "name": "Account",
+      "contractAddress": "a58a17a56bb3f308101ad04034f3b3de2cd73ce9286d73826c09755b0adc8145",
+      "txHash": "2ac395d943f85b99b8e716028ca2606d461b6e6cadd861cb43c55c8c4db4426c",
+      "txId": "006e654603835538a07e6c1f71f19610dbf054d7d9ab70b55cd7a7af14075cc72e",
+      "note": "V3 second account (cross-account replay)",
+      "stack": "midnight-aa-36080",
+      "deployedAt": "2026-08-12T00:43:26.479Z"
     }
   ]
 }
