@@ -1,14 +1,22 @@
-# 00001-midnight-aa
+# Midnight AA <> EVM Experiment
 
-EVM-signature account abstraction on Midnight 2.x. Implementation repo for the
-plan set at `/Users/edwardalvarado/todo/AA/plans/` (start at `PLAN-00-MACRO.md`).
+EVM-signature account abstraction on Midnight 2.x: an account is a Compact
+contract owned by an Ethereum key — MetaMask `personal_sign` intents are
+verified inside a ZK circuit (keccak256 EIP-191 digest → `secp256k1EcdsaVerify`
+→ address binding) and executed against OpenZeppelin-style ERC20 tokens through
+a cross-contract validation call.
 
-This repo contains **PLAN-01 — infrastructure & toolchain**, **PLAN-02 — de-risk
-spikes & test strategy**, **PLAN-03 — the Account contract + frozen payload**,
-the completed **PLAN-04** OZ TokenAA fork + `accountTransfer` adapter, and
-**PLAN-05 — the signer client & relayer**.
+> Internal working name: `00001-midnight-aa` (workspace counter prefix — some
+> paths and logs refer to the project by that name).
 
-PLAN-02's headline: **S1 is GO** — one `--feature-zkir-v3` circuit can carry
+The repo is the complete system: **infrastructure & toolchain** (a persistent
+dockerized Midnight 2.x network + pinned compiler), **de-risk spikes**
+(`spikes/`), **the Account contract + frozen payload** (`contracts/Account.compact`,
+`contracts/PAYLOAD.md`), **the OZ TokenAA fork + `accountTransfer` adapter**, the
+**signer client & relayer**, and the end-to-end **conformance ledger**
+(`VERIFICATION.md`).
+
+The pivotal spike result: **S1 is GO** — one `--feature-zkir-v3` circuit can carry
 keccak + secp256k1 ECDSA verification *and* make a cross-contract call, and a
 `ContractAddress` returned from the callee's `kernel.self()` survives the return
 boundary, which is what the account-as-validator architecture rests on. Each
@@ -19,14 +27,15 @@ spike has a write-up in `spikes/`; read `spikes/S1-RESULTS.md` first.
 One long-running local Midnight 2.x network backs every phase of the project.
 Proof public params take minutes to download, a proof takes tens of seconds, and
 contract addresses recorded in `infra/DEPLOYMENTS.json` are re-attached by later
-plans against *this* chain. Restarting is expensive; wiping it is destructive.
+suites against *this* chain. Restarting is expensive; wiping it is destructive.
 
 > **2026-08-11 incident:** Docker disk exhaustion stopped the node long enough
 > for the non-archive chain to prune state needed by a restarted indexer. Node
-> chain data and proof params are preserved, but the persistent indexer cannot
-> recover without the explicit human-gated reset in PLAN-05 Q2. PLAN-04's live
-> gate used and tore down an isolated random-port stack; it did not overwrite
-> `STACK.env` or record disposable addresses.
+> chain data and proof params were preserved, but the indexer could not recover;
+> the chain was regenerated after an explicit human-gated wipe. The compose file
+> now carries the two root-cause fixes (`indexer-data` volume,
+> `--state-pruning=archive`); wiped-generation addresses are quarantined in
+> `DEPLOYMENTS.json` via the `archived` field.
 
 ```bash
 ./infra/stack-up.sh
@@ -55,7 +64,7 @@ default would not fail; it would quietly succeed against the wrong chain.
 The allocator picks a random base `P` in 10100–63990 whose whole `P..P+9` window
 is free and clear of the reserved ranges (`10000–10030`, `12300–12599`, `9944`,
 `8088`). Assignment: node `P`, indexer HTTP `P+1`, indexer WS `P+2`, proof server
-`P+3`; `P+4..P+9` are held for PLAN-05's relayer and dashboard.
+`P+3`; `P+4..P+9` are held for the relayer and dashboard.
 
 ## Toolchain
 
@@ -82,16 +91,17 @@ as the `contract` interface the caller declares (case-sensitive).
 | `infra/` | compose file, lifecycle scripts, generated `STACK.env`, `DEPLOYMENTS.json`, `TIMINGS.json` |
 | `contracts/` | `.compact` sources; `managed/` holds compiled artifacts (gitignored) |
 | `src/` | provider assembly, wallet, compile pipeline, registries |
-| `src/test/` | the verification gates for both plans |
-| `spikes/` | PLAN-02 spike write-ups (S1, S1b, S2, S3, S4) — verdicts, evidence, carry-forward |
-| `src/rejection-matrix.ts` | PLAN-02's rejection matrix as verified data, not a table |
+| `src/test/` | the verification gates (unit, simulator, and live suites) |
+| `spikes/` | spike write-ups (S1, S1b, S2, S3, S4) — verdicts, evidence, carry-forward |
+| `src/rejection-matrix.ts` | the rejection matrix as verified data, not a table |
+| `VERIFICATION.md` | the conformance ledger — every gate with its evidence |
 | `src/maintenance.ts` | verifier-key rotation (the SDK's own helpers do not work on this lane) |
 | `versions.json` | the machine-readable pin matrix |
 
 Files under `src/` vendored from `compact-end-2-end` carry a header naming the
 upstream revision and every local change.
 
-## PLAN-04: TokenAA + Account adapter
+## TokenAA + Account adapter
 
 `contracts/TokenAA.compact` is the pinned EvmErc20 fork with OpenZeppelin
 `Ownable` vendored under `contracts/vendor/openzeppelin/`. Genesis supply and
@@ -101,8 +111,8 @@ secret-key witness; ordinary transfer and allowance paths remain
 holder-authorized. Generic `mint(left(paddedEthAddress), value)` still covers
 Ethereum-shaped identities.
 
-`accountTransfer(account, payload, sig, pk)` uses PLAN-03's frozen
-`MIDNIGHT_ACCOUNT_V1` 176-byte payload. It binds domain, op, token address,
+`accountTransfer(account, payload, sig, pk)` uses the frozen
+`MIDNIGHT_ACCOUNT_V1` 176-byte payload (`contracts/PAYLOAD.md`). It binds domain, op, token address,
 signer, Account address, recipient, nonce, and amount; calls
 `Account.validate(signer,digest)`; then debits the returned ContractAddress's
 right-arm balance through OZ `_update`. Account owns the digest replay set;
@@ -135,7 +145,7 @@ and the redundant `mintToEthAddress` convenience is replaced by
 Regenerate clients/proofs; old circuit arguments and verifier keys are not
 interchangeable.
 
-## PLAN-05: signer client & relayer
+## Signer client & relayer
 
 `src/signer.ts` is the EVM-wallet seam: EIP-191 framing, the 65-byte `r‖s‖v`
 wire signature, off-circuit public-key recovery (noble, `prehash: false`), and
